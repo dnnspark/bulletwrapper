@@ -25,10 +25,8 @@ class R2D2Adder(BulletHook):
 
     _id = 'r2d2_adder'
 
-    # def after_init(self):
-    #     pb.setAdditionalSearchPath(pybullet_data.getDataPath()) #optionally
-
     def after_reset(self, pb_state):
+        # pb.setAdditionalSearchPath(pybullet_data.getDataPath()) #optionally
         start_position = [0,0,1]
         start_rotation = pb.getQuaternionFromEuler([0,0,0])
         self.box_id = pb.loadURDF("r2d2.urdf", start_position, start_rotation)
