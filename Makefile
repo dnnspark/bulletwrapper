@@ -9,7 +9,8 @@ ci:
 	pytest
 
 flake8:
-	flake8 --ignore=E501,F401,E128,E402,E731,F821 .
+	flake8 --ignore=E501,F401,E128,E402,E731,F821 pybullet
+	flake8 --ignore=E501,F401,E128,E402,E731,F821 tests
 
 clean:
 	rm -rf *.egg-info
