@@ -1,4 +1,5 @@
 import pybullet as pb 
+import abc
 
 class BulletSimulator():
 
@@ -43,6 +44,18 @@ class BulletSimulator():
             out = hook.after_step(BulletState(self), step_output)
             step_output.add(hook.id, out)
 
+class BulletHook(abc.ABC):
+
+    @property
+    def id(self):
+        return self._id
+
+    def after_reset(self, pb_state):
+        pass   
+
+    def after_step(self, pb_state, step_output):
+        pass   
+
 class BulletState():
 
     def __init__(self, pb_simulator):
@@ -59,4 +72,5 @@ class StepOutput():
 
 class StopSimulation(Exception):
     pass
+
 

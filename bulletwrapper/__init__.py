@@ -1,1 +1,1 @@
-from .core import BulletSimulator, StopSimulation
+from .core import BulletSimulator, BulletHook, StopSimulation
