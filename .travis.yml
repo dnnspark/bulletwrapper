@@ -13,8 +13,8 @@ install:
   - make install_dev
   
 script: 
-  - make flake8
   - make ci
+  # - make flake8
   
 notifications:
   email:
