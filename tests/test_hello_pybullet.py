@@ -43,7 +43,7 @@ def test_r2d2():
     r2d2_adder = R2D2Adder()
 
     sim = BulletSimulator(
-            mode = pb.GUI,
+            mode = pb.DIRECT,
             max_time = 2.,
             hooks = [
                 plane_adder,
