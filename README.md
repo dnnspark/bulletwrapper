@@ -1,12 +1,12 @@
 bulletwrapper
 =============
 
-**bulletwrapper is a set of extensions of pybullet (https://pybullet.org/). It includes interface classes and utility functions.**
+**bulletwrapper is a set of extensions to pybullet (https://pybullet.org/). It includes interface classes and utility functions.**
 
 Interface
 ---------
 
-bulletwrapper provides openai-gym style interface of pybullet. E.g.,
+bulletwrapper provides openai-gym style interface of pybullet.
 
 ```python
 sim = BulletSimulator()
@@ -20,7 +20,7 @@ bulletwrapper uses various hooks for adding dynamic components and cameras.
 
 ```python
 r2d2_adder = R2D2AdderHook()
-final_image_capturer = FinalImageCapturer()
+final_image_capturer = FinalImageCapturerHook()
 
 sim = BulletSimulator(
         hooks=[
