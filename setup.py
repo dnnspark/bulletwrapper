@@ -15,7 +15,8 @@ DESCRIPTION = 'bulletwrapper is a set of extensions of pybullet. It interface cl
 URL = 'https://github.com/dnnspark/bulletwrapper'
 EMAIL = 'dnnsipark@gmail.com'
 AUTHOR = 'Dennis Park'
-REQUIRES_PYTHON = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"  # 2.7 or >=3.4
+# REQUIRES_PYTHON = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"  # 2.7 or >=3.4
+REQUIRES_PYTHON = ">=3.4"
 
 # What packages are required for this module to be executed?
 REQUIRED = [
@@ -74,7 +75,7 @@ sutools.setup(
         # 'Programming Language :: Python :: 3.6',
         # 'Programming Language :: Python :: Implementation :: CPython',
         # 'Programming Language :: Python :: Implementation :: PyPy'
-        'Development Status :: 2 - Pre-Alpha',
+        # 'Development Status :: 2 - Pre-Alpha',
         # 'Intended Audience :: Developers',
         'Natural Language :: English',
         # 'License :: OSI Approved :: Apache Software License',
