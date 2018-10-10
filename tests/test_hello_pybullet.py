@@ -1,10 +1,15 @@
-from bulletwrapper import BulletSimulator, StopSimulation
+import os
 import pybullet as pb
 import pybullet_data
+from bulletwrapper import BulletSimulator, StopSimulation
 from bulletwrapper import BulletHook
+from bulletwrapper.hooks import GroundPlaneHook
+
+# CONNECT_MODE = pb.GUI
+CONNECT_MODE = pb.DIRECT
 
 def test_hello_pybullet():
-    sim = BulletSimulator(mode=pb.DIRECT, max_time=5.)
+    sim = BulletSimulator(mode=CONNECT_MODE, max_time=5.)
 
     sim.reset()
     while True:
@@ -13,23 +18,15 @@ def test_hello_pybullet():
         except StopSimulation:
             break;
 
-class PlaneAdder(BulletHook):
+class R2D2CreatorHook(BulletHook):
 
-    _id = 'plane_adder'
-
-    def after_reset(self, pb_state):
-        pb.setAdditionalSearchPath(pybullet_data.getDataPath()) #optionally
-        plane_id = pb.loadURDF("plane.urdf")
-
-class R2D2Adder(BulletHook):
-
-    _id = 'r2d2_adder'
+    def __init__(self):
+        self.r2d2_urdf_path = os.path.join(pybullet_data.getDataPath(), 'r2d2.urdf')
 
     def after_reset(self, pb_state):
-        # pb.setAdditionalSearchPath(pybullet_data.getDataPath()) #optionally
         start_position = [0,0,1]
         start_rotation = pb.getQuaternionFromEuler([0,0,0])
-        self.box_id = pb.loadURDF("r2d2.urdf", start_position, start_rotation)
+        self.box_id = pb.loadURDF(self.r2d2_urdf_path, start_position, start_rotation)
 
     def after_step(self, pb_state, step_output):
 
@@ -37,15 +34,15 @@ class R2D2Adder(BulletHook):
 
 def test_r2d2():
 
-    plane_adder = PlaneAdder()
-    r2d2_adder = R2D2Adder()
+    ground_plane = GroundPlaneHook()
+    r2d2 = R2D2CreatorHook()
 
     sim = BulletSimulator(
-            mode = pb.DIRECT,
-            max_time = 2.,
+            mode = CONNECT_MODE,
+            max_time = 2,
             hooks = [
-                plane_adder,
-                r2d2_adder,
+                ground_plane,
+                r2d2,
             ],
         )
 

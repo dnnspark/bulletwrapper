@@ -1,5 +1,7 @@
 import pybullet as pb 
-import abc
+import collections
+import itertools 
+import re
 
 class BulletSimulator():
 
@@ -12,8 +14,8 @@ class BulletSimulator():
 
         self.client_id = pb.connect(mode)
         self.timestep = timestep
-        self.hooks = hooks
         self.max_time = max_time
+        self.hooks = hooks
 
     def init(self):
 
@@ -28,8 +30,13 @@ class BulletSimulator():
         self.init()
         self.sim_time = 0.
 
+        step_output = StepOutput()
         for hook in self.hooks:
-            hook.after_reset(BulletState(self))
+            output = hook.after_reset(BulletState(self))
+            if output is not None:
+                step_output.add(hook.id, output)
+
+        return step_output
 
     def step(self):
 
@@ -41,10 +48,29 @@ class BulletSimulator():
 
         step_output = StepOutput()
         for hook in self.hooks:
-            out = hook.after_step(BulletState(self), step_output)
-            step_output.add(hook.id, out)
+            output = hook.after_step(BulletState(self), step_output)
+            if output is not None:
+                step_output.add(hook.id, output)
 
-class BulletHook(abc.ABC):
+        return step_output
+
+class InstanceCounterMeta(type):
+
+    def __init__(cls, name, bases, attrs):
+        super().__init__(name, bases, attrs)
+        cls._ids = itertools.count(1)
+
+def camel2snake(name):
+    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+
+class BulletHook(metaclass=InstanceCounterMeta):
+
+    def __new__(cls, *args, **kwargs):
+        instance = super().__new__(cls)
+        instance._id = camel2snake( cls.__name__ ) + '-%02d' % next(cls._ids)
+
+        return instance
 
     @property
     def id(self):
@@ -69,6 +95,10 @@ class StepOutput():
     def add(self, hook_id, out):
         assert not hook_id in self.output
         self.output[hook_id] = out
+
+    @property
+    def is_empty(self):
+        return len(self.output) == 0
 
 class StopSimulation(Exception):
     pass
