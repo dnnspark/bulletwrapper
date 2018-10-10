@@ -71,10 +71,10 @@ def test_obj_adder_multiple_in_sequence():
             ],
         )
 
-    sim.reset()
+    out = sim.reset()
     while True:
         try:
-            sim.step()
+            out = sim.step()
         except StopSimulation:
             break;
 
@@ -114,9 +114,9 @@ def test_obj_adder_multiple_simultaneous():
             ],
         )
 
-    sim.reset()
+    out = sim.reset()
     while True:
         try:
-            sim.step()
+            out = sim.step()
         except StopSimulation:
             break;
