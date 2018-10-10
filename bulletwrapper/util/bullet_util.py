@@ -1,6 +1,6 @@
 import numpy as np
 import pybullet as pb
-from bulletwrapper.transformations import quaternion_from_matrix as R2quat
+from bulletwrapper.util.transformations import quaternion_from_matrix as R2quat
 
 def add_obj(path_to_obj, R, t, fix_base, base_mass, base_inertialframe_position):
 

@@ -6,6 +6,8 @@ from bulletwrapper import BulletSimulator, StopSimulation
 from bulletwrapper.hooks import GroundPlaneHook, OBJCreatorHook
 from bulletwrapper.hooks.ogl_cameras import StaticOGLCameraHook
 
+from imageio import imwrite
+
 CONNECT_MODE = pb.DIRECT
 # CONNECT_MODE = pb.GUI
 
@@ -41,11 +43,14 @@ def test_static_opengl_camera():
         )
 
     camera = StaticOGLCameraHook(
-        position = np.array([3., 3., 5.]),
+        K = [1075.65091572, 0.0, 210.06888344, 0.0, 1073.90347929, 174.72159802, 0.0, 0.0, 1.0],
+        img_shape = (400,400),
+        position = np.array([10., 10., 7.]),
         lookat = np.array([0., 0., 0.]),
-        up = np.array([0., 1., 0.]),
+        up = 'up',
         start = 0.,
-        interval = .5,
+        # interval = .5,
+        interval = .1,
         )
 
     sim = BulletSimulator(
@@ -60,10 +65,19 @@ def test_static_opengl_camera():
             ],
         )
 
+    k = 0
+
     out = sim.reset()
     while True:
         try:
             out = sim.step()
+            for key in out.output.keys():
+                if 'static_ogl_camera' in key:
+                    I = out.output[key]
+                    imwrite('I%02d.png' % k, I)
+                    k += 1
+
+
         except StopSimulation:
             break;
 
