@@ -3,7 +3,7 @@ import numpy as np
 import pybullet as pb
 import pybullet_data
 from bulletwrapper import BulletHook
-from bulletwrapper.bullet_util import add_obj
+from bulletwrapper.util.bullet_util import add_obj
 
 class GroundPlaneHook(BulletHook):
 

@@ -6,8 +6,8 @@ from bulletwrapper import BulletSimulator, StopSimulation
 from bulletwrapper.hooks import GroundPlaneHook, OBJCreatorHook
 from bulletwrapper.hooks.ogl_cameras import StaticOGLCameraHook
 
-# CONNECT_MODE = pb.DIRECT
-CONNECT_MODE = pb.GUI
+CONNECT_MODE = pb.DIRECT
+# CONNECT_MODE = pb.GUI
 
 DUCK_OBJ_PATH = os.path.join(pybullet_data.getDataPath(), 'duck.obj')
 
