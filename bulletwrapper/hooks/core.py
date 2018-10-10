@@ -56,3 +56,4 @@ class OBJCreatorHook(BulletHook):
         if not self.created and pb_state.sim_time >= self.time_to_create:
             body_id = self.create()
             return body_id
+
