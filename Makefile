@@ -1,5 +1,6 @@
 venv:
 	virtualenv venv -p `which python3.6` 
+	ln -s venv/bin/activate activate
 
 install_dev:
 	source ./venv/bin/activate; \
@@ -18,7 +19,8 @@ clean:
 	rm -rf dist/
 	rm -rf junit-py*.xml
 	rm -rf venv/
-	rm `find . -name '*.pyc'`
-	rm `find . -name __pycache__`
+	rm -rf `find . -name '*.pyc'`
+	rm -rf `find . -name __pycache__`
+	rm activate
 
 .PHONY: venv install_dev ci flake8 clean
