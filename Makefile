@@ -1,3 +1,7 @@
+error:
+	@echo "Please choose one of the following target: venv, install_dev, ci, flake8, clean"
+	@exit 2
+
 venv:
 	virtualenv venv -p `which python3.6` 
 	ln -s venv/bin/activate activate
@@ -21,6 +25,6 @@ clean:
 	rm -rf venv/
 	rm -rf `find . -name '*.pyc'`
 	rm -rf `find . -name __pycache__`
-	rm activate
+	rm -rf activate
 
 .PHONY: venv install_dev ci flake8 clean
