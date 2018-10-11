@@ -15,8 +15,6 @@ class StaticOGLCameraHook(BulletHook):
         take the first picture at sim_time=start, and then take picture every <interval> seconds until the time is up.
     if interval is None,
         take only one picture when start == sim_time
-
-
     '''
 
     def __init__(self,
@@ -31,7 +29,6 @@ class StaticOGLCameraHook(BulletHook):
             start = np.inf,
             interval = None,
         ):
-
 
         self.start = start 
         self.interval = interval

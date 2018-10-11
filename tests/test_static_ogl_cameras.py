@@ -19,6 +19,7 @@ def maybe_collect_images(step_out):
             images.append(I)
     return images
 
+
 def test_static_opengl_cameras():
     '''
     Based on test_obj_adder.test_obj_adder_multiple_in_sequence().
@@ -103,6 +104,7 @@ def test_static_opengl_cameras():
         num_images += len(images)
 
     assert num_images == 100
+
 
 def test_static_opengl_cameras_one_final_shot():
     '''
