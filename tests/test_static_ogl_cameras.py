@@ -6,7 +6,7 @@ from bulletwrapper import BulletSimulator, StopSimulation
 from bulletwrapper.hooks import GroundPlaneHook, OBJCreatorHook
 from bulletwrapper.hooks.ogl_cameras import StaticOGLCameraHook
 
-from imageio import imwrite
+# from imageio import imwrite
 
 CONNECT_MODE = pb.DIRECT
 # CONNECT_MODE = pb.GUI
@@ -74,7 +74,7 @@ def test_static_opengl_camera():
             for key in out.output.keys():
                 if 'static_ogl_camera' in key:
                     I = out.output[key]
-                    imwrite('I%02d.png' % k, I)
+                    # imwrite('I%02d.png' % k, I)
                     k += 1
 
 
