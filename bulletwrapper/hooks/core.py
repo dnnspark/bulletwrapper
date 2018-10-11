@@ -3,7 +3,7 @@ import numpy as np
 import pybullet as pb
 import pybullet_data
 from bulletwrapper import BulletHook
-from bulletwrapper.bullet_util import add_obj
+from bulletwrapper.util.bullet_util import add_obj
 
 class GroundPlaneHook(BulletHook):
 
@@ -56,3 +56,4 @@ class OBJCreatorHook(BulletHook):
         if not self.created and pb_state.sim_time >= self.time_to_create:
             body_id = self.create()
             return body_id
+

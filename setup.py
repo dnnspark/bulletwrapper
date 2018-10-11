@@ -21,7 +21,7 @@ REQUIRES_PYTHON = ">=3.4"
 # What packages are required for this module to be executed?
 REQUIRED = [
     'pybullet',
-    'numpy',
+    'numpy>=1.13.0',
 ]
 
 # What packages are optional?
