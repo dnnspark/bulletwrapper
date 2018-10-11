@@ -6,6 +6,19 @@ from bulletwrapper.util.camera_util import ogl_viewmat_from_lookat, ogl_projmat
 
 class StaticOGLCameraHook(BulletHook):
 
+    '''
+    if start == 0.,
+        take the first picture upon reset,
+    if start == np.inf, 
+        take only one picture before the simulation terminates.
+    if interval is not None,
+        take the first picture at sim_time=start, and then take picture every <interval> seconds until the time is up.
+    if interval is None,
+        take only one picture when start == sim_time
+
+
+    '''
+
     def __init__(self,
             # intrinsics
             K,
@@ -15,11 +28,12 @@ class StaticOGLCameraHook(BulletHook):
             lookat = np.array([0., 0., 0.]),
             up = 'up',
             light_src = [1,1,1],
-            start = 0.,
+            start = np.inf,
             interval = None,
         ):
 
-        self.start = start
+
+        self.start = start 
         self.interval = interval
         self.last_caputured = None
 
@@ -45,11 +59,21 @@ class StaticOGLCameraHook(BulletHook):
 
         sim_time = pb_state.sim_time
 
-        if sim_time >= self.start and \
-            ( self.last_caputured is None or sim_time - self.last_caputured >= self.interval ):
+        if sim_time >= self.start and (
+            self.last_caputured is None or (
+                 self.interval is not None and sim_time - self.last_caputured >= self.interval
+                 )
+            ):
             img = self.capture()
             self.last_caputured = sim_time
 
+            return img
+
+    def before_end(self, pb_state, hooks_output):
+
+        if self.start == np.inf:
+            img = self.capture()
+            self.last_caputured = pb_state.sim_time
             return img
 
     def capture(self):
