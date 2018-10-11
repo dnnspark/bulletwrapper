@@ -13,7 +13,15 @@ CONNECT_MODE = pb.DIRECT
 
 DUCK_OBJ_PATH = os.path.join(pybullet_data.getDataPath(), 'duck.obj')
 
-def test_static_opengl_camera():
+def maybe_collect_images(step_out):
+    images = []
+    for key in step_out.output.keys():
+        if 'static_ogl_camera' in key:
+            I = step_out.output[key]
+            images.append(I)
+    return images
+
+def test_static_opengl_cameras():
     '''
     Identical to test_obj_adder.test_obj_adder_multiple_in_sequence(), but
     add a single-shot camera.
@@ -42,7 +50,7 @@ def test_static_opengl_camera():
         time_to_create = 2.,
         )
 
-    camera = StaticOGLCameraHook(
+    camera_1 = StaticOGLCameraHook(
         K = [1075.65091572, 0.0, 210.06888344, 0.0, 1073.90347929, 174.72159802, 0.0, 0.0, 1.0],
         img_shape = (400,400),
         position = np.array([10., 10., 7.]),
@@ -53,33 +61,45 @@ def test_static_opengl_camera():
         interval = .1,
         )
 
+    camera_2 = StaticOGLCameraHook(
+        K = [1075.65091572, 0.0, 210.06888344, 0.0, 1073.90347929, 174.72159802, 0.0, 0.0, 1.0],
+        img_shape = (400,400),
+        position = np.array([-10., -10., 6.]),
+        lookat = np.array([0., 0., 0.]),
+        up = 'up',
+        start = 0.,
+        # interval = .5,
+        interval = .1,
+        )
+
     sim = BulletSimulator(
         mode=CONNECT_MODE,
-        max_time=10.,
+        max_time=5.,
         hooks=[
             ground_plane,
             duck_1,
             duck_2,
             duck_3,
-            camera,
+            camera_1,
+            camera_2,
             ],
         )
 
-    k = 0
+    num_images = 0
 
-    out = sim.reset()
+    step_out = sim.reset()
+    images = maybe_collect_images(step_out)
+    for I in images:
+        assert I.shape == (400,400,4)
+    num_images += len(images)
     while True:
         try:
-            out = sim.step()
-            for key in out.output.keys():
-                if 'static_ogl_camera' in key:
-                    I = out.output[key]
-                    # imwrite('I%02d.png' % k, I)
-                    k += 1
-
+            step_out = sim.step()
+            images = maybe_collect_images(step_out)
+            for I in images:
+                assert I.shape == (400,400,4)
+            num_images += len(images)
 
         except StopSimulation:
             break;
-
-if __name__ == '__main__':
-    test_static_opengl_camera()
+    assert num_images == 100
