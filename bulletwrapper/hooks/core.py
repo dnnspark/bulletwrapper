@@ -52,7 +52,7 @@ class OBJCreatorHook(BulletHook):
             return body_id
 
 
-    def after_step(self, pb_state, step_output):
+    def after_step(self, pb_state, hooks_output):
         if not self.created and pb_state.sim_time >= self.time_to_create:
             body_id = self.create()
             return body_id

@@ -22,7 +22,7 @@ def test_obj_adder_single():
 
     sim = BulletSimulator(
         mode=CONNECT_MODE,
-        max_time=20.,
+        max_time=10.,
         hooks=[
             ground_plane,
             duck,
@@ -30,11 +30,8 @@ def test_obj_adder_single():
         )
 
     sim.reset()
-    while True:
-        try:
-            sim.step()
-        except StopSimulation:
-            break;
+    while sim.running:
+        sim.step() 
 
 def test_obj_adder_multiple_in_sequence():
 
@@ -62,7 +59,7 @@ def test_obj_adder_multiple_in_sequence():
 
     sim = BulletSimulator(
         mode=CONNECT_MODE,
-        max_time=20.,
+        max_time=10.,
         hooks=[
             ground_plane,
             duck_1,
@@ -72,11 +69,8 @@ def test_obj_adder_multiple_in_sequence():
         )
 
     out = sim.reset()
-    while True:
-        try:
-            out = sim.step()
-        except StopSimulation:
-            break;
+    while sim.running:
+        out = sim.step()
 
 def test_obj_adder_multiple_simultaneous():
 
@@ -105,7 +99,7 @@ def test_obj_adder_multiple_simultaneous():
 
     sim = BulletSimulator(
         mode=CONNECT_MODE,
-        max_time=20.,
+        max_time=10.,
         hooks=[
             ground_plane,
             duck_1,
@@ -115,8 +109,5 @@ def test_obj_adder_multiple_simultaneous():
         )
 
     out = sim.reset()
-    while True:
-        try:
-            out = sim.step()
-        except StopSimulation:
-            break;
+    while sim.running:
+        out = sim.step()

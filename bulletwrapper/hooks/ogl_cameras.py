@@ -41,7 +41,7 @@ class StaticOGLCameraHook(BulletHook):
             self.last_caputured = 0.
             return img
 
-    def after_step(self, pb_state, step_output):
+    def after_step(self, pb_state, hooks_output):
 
         sim_time = pb_state.sim_time
 
@@ -53,7 +53,6 @@ class StaticOGLCameraHook(BulletHook):
             return img
 
     def capture(self):
-        # return np.zeros((3,3), np.uint8)
 
         H,W = self.img_shape
         pb_P, pb_V = self.pb_P, self.pb_V

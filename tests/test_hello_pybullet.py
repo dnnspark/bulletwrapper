@@ -12,11 +12,8 @@ def test_hello_pybullet():
     sim = BulletSimulator(mode=CONNECT_MODE, max_time=5.)
 
     sim.reset()
-    while True:
-        try:
-            sim.step()
-        except StopSimulation:
-            break;
+    while not sim.terminated:
+        sim.step()
 
 class R2D2CreatorHook(BulletHook):
 
@@ -28,7 +25,7 @@ class R2D2CreatorHook(BulletHook):
         start_rotation = pb.getQuaternionFromEuler([0,0,0])
         self.box_id = pb.loadURDF(self.r2d2_urdf_path, start_position, start_rotation)
 
-    def after_step(self, pb_state, step_output):
+    def after_step(self, pb_state, hooks_output):
 
         position, orientation = pb.getBasePositionAndOrientation(self.box_id)
 
@@ -47,8 +44,11 @@ def test_r2d2():
         )
 
     sim.reset()
-    while True:
-        try:
-            sim.step()
-        except StopSimulation:
-            break;
+    while not sim.terminated:
+        output = sim.step()
+
+    # while True:
+    #     try:
+    #         sim.step()
+    #     except StopSimulation:
+    #         break;

@@ -85,19 +85,19 @@ def test_static_opengl_cameras():
 
     num_images = 0
 
-    step_out = sim.reset()
-    images = maybe_collect_images(step_out)
+    out = sim.reset()
+
+    images = maybe_collect_images(out)
     for I in images:
         assert I.shape == (400,400,4)
     num_images += len(images)
-    while True:
-        try:
-            step_out = sim.step()
-            images = maybe_collect_images(step_out)
-            for I in images:
-                assert I.shape == (400,400,4)
-            num_images += len(images)
 
-        except StopSimulation:
-            break;
+    while sim.running:
+        out = sim.step()
+
+        images = maybe_collect_images(out)
+        for I in images:
+            assert I.shape == (400,400,4)
+        num_images += len(images)
+
     assert num_images == 100
