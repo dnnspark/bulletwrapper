@@ -22,7 +22,6 @@ class BulletSimulator():
         pb.setGravity(0, 0, -9.81)
         pb.setTimeStep(self.timestep)
         pb.setPhysicsEngineParameter(numSolverIterations=40)
-        # pb.setAdditionalSearchPath(BENCHMARK_DATASETS_ROOT)
 
     def reset(self):
 

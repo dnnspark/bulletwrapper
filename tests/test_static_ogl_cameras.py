@@ -6,8 +6,6 @@ from bulletwrapper import BulletSimulator, StopSimulation
 from bulletwrapper.hooks import GroundPlaneHook, OBJCreatorHook
 from bulletwrapper.hooks.ogl_cameras import StaticOGLCameraHook
 
-# from imageio import imwrite
-
 CONNECT_MODE = pb.DIRECT
 # CONNECT_MODE = pb.GUI
 
