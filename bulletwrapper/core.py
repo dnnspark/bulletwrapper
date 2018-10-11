@@ -4,6 +4,9 @@ import itertools
 import re
 
 class BulletSimulator():
+    '''
+    openai-gym style interface of pybullet.
+    '''
 
     def __init__(self,
         mode = pb.GUI,
@@ -16,6 +19,12 @@ class BulletSimulator():
         self.timestep = timestep
         self.max_time = max_time
         self.hooks = hooks
+        self.terminated = None
+
+    @property
+    def running(self):
+        assert self.terminated is not None
+        return not self.terminated
 
     def init(self):
 
@@ -28,16 +37,35 @@ class BulletSimulator():
         pb.resetSimulation(self.client_id)
         self.init()
         self.sim_time = 0.
+        self.terminated = False
 
-        step_output = StepOutput()
+        reset_output = HooksOutput()
         for hook in self.hooks:
             output = hook.after_reset(BulletState(self))
             if output is not None:
-                step_output.add(hook.id, output)
+                reset_output.add(hook.id, output)
 
-        return step_output
+        return reset_output
 
     def step(self):
+        '''
+        Proceed one step in simulation.
+        1. pb.stepSimulation()
+        2. Call .after_step() methods of all hooks.
+            - it can use outputs of previous hooks
+            - if any of the hook raise StopSimulation, 
+                all outputs of the current step are ignored,
+                and the before_end() methods are called (see .terminate()).
+        '''
+
+        try:
+            step_output = self._step()
+            return step_output
+        except StopSimulation:
+            exit_output = self._terminate()
+            return exit_output
+
+    def _step(self):
 
         if self.max_time is not None and self.sim_time + self.timestep > self.max_time:
             raise StopSimulation
@@ -45,7 +73,7 @@ class BulletSimulator():
         pb.stepSimulation(self.client_id)
         self.sim_time += self.timestep
 
-        step_output = StepOutput()
+        step_output = HooksOutput()
         for hook in self.hooks:
             output = hook.after_step(BulletState(self), step_output)
             if output is not None:
@@ -53,7 +81,23 @@ class BulletSimulator():
 
         return step_output
 
+    def _terminate(self):
+
+        exit_output = HooksOutput()
+        for hook in self.hooks:
+            output = hook.before_end(BulletState(self), exit_output)
+            if output is not None:
+                exit_output.add(hook.id, output)
+
+        pb.disconnect()
+        self.terminated = True
+
+        return exit_output
+
 class InstanceCounterMeta(type):
+    '''
+    Every instance of the class made using this meta-class has unique id.
+    '''
 
     def __init__(cls, name, bases, attrs):
         super().__init__(name, bases, attrs)
@@ -64,6 +108,20 @@ def camel2snake(name):
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
 
 class BulletHook(metaclass=InstanceCounterMeta):
+    '''
+    This hook is a template interface for adding modular components to BulletSimulation.
+    It tells what to do at each stage in simulation.
+    1. after_reset()
+        This tells what to do after pb.resetSimulation() and setting up basic simulation parameters.
+        See BulletSimulation.reset().
+    2. after_step()
+        This tells what to do after pb.stepSimulation()
+        See BulletSimulation._step()
+    3. before_end()
+        This tells what to do before terminating the simulation.
+        The termination is triggered by time-up, or one of the hook's call for termination.
+        See BulletSimulation._terminate().
+    '''
 
     def __new__(cls, *args, **kwargs):
         instance = super().__new__(cls)
@@ -78,15 +136,21 @@ class BulletHook(metaclass=InstanceCounterMeta):
     def after_reset(self, pb_state):
         pass   
 
-    def after_step(self, pb_state, step_output):
+    def after_step(self, pb_state, hooks_output):
         pass   
 
+    def before_end(self, pb_state, hooks_output):
+        pass
+
 class BulletState():
+    '''
+    TODO: add body_ids
+    '''
 
     def __init__(self, pb_simulator):
         self.sim_time = pb_simulator.sim_time
 
-class StepOutput():
+class HooksOutput():
 
     def __init__(self):
         self.output = {}
