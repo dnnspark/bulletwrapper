@@ -52,10 +52,8 @@ sutools.setup(
     python_requires=REQUIRES_PYTHON,
     url=URL,
     # packages=sutools.find_packages(exclude=('tests',)),
-    packages=[
-        NAME,  # main src dir has same name as package
-        'tests'
-    ],
+    packages=sutools.find_packages(),
+        # sutools.find_packages(exclude=('test',)),
     # If your package is a single module, use this instead of 'packages':
     # py_modules=['mypackage'],
 
@@ -93,5 +91,5 @@ sutools.setup(
         # 'upload': UploadCommand,
     },
 
-    zip_safe=False,
+    # zip_safe=False,
 )
