@@ -46,15 +46,15 @@ class StaticOGLCameraHook(BulletHook):
 
         self.light_src = light_src
 
-    def after_reset(self, pb_state):
-        if pb_state.sim_time >= self.start:
+    def after_reset(self, sim):
+        if sim.sim_time >= self.start:
             img = self.capture()
             self.last_caputured = 0.
             return img
 
-    def after_step(self, pb_state, hooks_output):
+    def after_step(self, sim, hooks_output):
 
-        sim_time = pb_state.sim_time
+        sim_time = sim.sim_time
 
         if sim_time >= self.start and (
             self.last_caputured is None or (
@@ -66,11 +66,11 @@ class StaticOGLCameraHook(BulletHook):
 
             return img
 
-    def before_end(self, pb_state, hooks_output):
+    def before_end(self, sim, hooks_output):
 
         if self.start == np.inf:
             img = self.capture()
-            self.last_caputured = pb_state.sim_time
+            self.last_caputured = sim.sim_time
             return img
 
     def capture(self):

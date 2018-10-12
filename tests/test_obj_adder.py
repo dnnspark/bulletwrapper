@@ -32,6 +32,7 @@ def test_obj_adder_single():
     sim.reset()
     while sim.running:
         sim.step() 
+    assert len(sim.objects) == 1
 
 def test_obj_adder_multiple_in_sequence():
 
@@ -69,8 +70,10 @@ def test_obj_adder_multiple_in_sequence():
         )
 
     out = sim.reset()
+    assert len(sim.objects) == 1
     while sim.running:
         out = sim.step()
+    assert len(sim.objects) == 3
 
 def test_obj_adder_multiple_simultaneous():
 
@@ -111,3 +114,4 @@ def test_obj_adder_multiple_simultaneous():
     out = sim.reset()
     while sim.running:
         out = sim.step()
+    assert len(sim.objects) == 3

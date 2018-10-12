@@ -2,14 +2,16 @@ import os
 import numpy as np
 import pybullet as pb
 import pybullet_data
-from bulletwrapper import BulletHook
+from bulletwrapper import BulletHook, ObjectInfo
 from bulletwrapper.util.bullet_util import add_obj
 
 class GroundPlaneHook(BulletHook):
 
-    def after_reset(self, pb_state):
+    def after_reset(self, sim):
         path_to_plane = pybullet_data.getDataPath()
         plane_id = pb.loadURDF(os.path.join( path_to_plane, 'plane.urdf'))
+
+        return ObjectInfo(path_to_plane, plane_id)
 
 
 class OBJCreatorHook(BulletHook):
@@ -35,6 +37,7 @@ class OBJCreatorHook(BulletHook):
         add_obj_kwargs['path_to_obj'] = path_to_obj
         add_obj_kwargs['t'] = position
 
+        self.path_to_obj = path_to_obj
         self.time_to_create = time_to_create
         self.add_obj_kwargs = add_obj_kwargs
         self.created = False
@@ -46,14 +49,18 @@ class OBJCreatorHook(BulletHook):
         return body_id
 
 
-    def after_reset(self, pb_state):
-        if pb_state.sim_time >= self.time_to_create:
+    def after_reset(self, sim):
+        if sim.sim_time >= self.time_to_create:
             body_id = self.create()
-            return body_id
+            obj_info = ObjectInfo( self.path_to_obj, body_id )
+            sim.objects.append(obj_info)
+            return obj_info
 
 
-    def after_step(self, pb_state, hooks_output):
-        if not self.created and pb_state.sim_time >= self.time_to_create:
+    def after_step(self, sim, hooks_output):
+        if not self.created and sim.sim_time >= self.time_to_create:
             body_id = self.create()
-            return body_id
+            obj_info = ObjectInfo( self.path_to_obj, body_id )
+            sim.objects.append(obj_info)
+            return obj_info
 

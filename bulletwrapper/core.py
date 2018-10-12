@@ -37,11 +37,12 @@ class BulletSimulator():
         pb.resetSimulation(self.client_id)
         self.init()
         self.sim_time = 0.
+        self.objects = []
         self.terminated = False
 
         reset_output = HooksOutput()
         for hook in self.hooks:
-            output = hook.after_reset(BulletState(self))
+            output = hook.after_reset(self)
             if output is not None:
                 reset_output.add(hook.id, output)
 
@@ -75,7 +76,7 @@ class BulletSimulator():
 
         step_output = HooksOutput()
         for hook in self.hooks:
-            output = hook.after_step(BulletState(self), step_output)
+            output = hook.after_step(self, step_output)
             if output is not None:
                 step_output.add(hook.id, output)
 
@@ -85,7 +86,7 @@ class BulletSimulator():
 
         exit_output = HooksOutput()
         for hook in self.hooks:
-            output = hook.before_end(BulletState(self), exit_output)
+            output = hook.before_end(self, exit_output)
             if output is not None:
                 exit_output.add(hook.id, output)
 
@@ -133,22 +134,14 @@ class BulletHook(metaclass=InstanceCounterMeta):
     def id(self):
         return self._id
 
-    def after_reset(self, pb_state):
+    def after_reset(self, sim):
         pass   
 
-    def after_step(self, pb_state, hooks_output):
+    def after_step(self, sim, hooks_output):
         pass   
 
-    def before_end(self, pb_state, hooks_output):
+    def before_end(self, sim, hooks_output):
         pass
-
-class BulletState():
-    '''
-    TODO: add body_ids
-    '''
-
-    def __init__(self, pb_simulator):
-        self.sim_time = pb_simulator.sim_time
 
 class HooksOutput():
 
@@ -166,4 +159,10 @@ class HooksOutput():
 class StopSimulation(Exception):
     pass
 
+
+class ObjectInfo():
+
+    def __init__(self, path_to_obj, body_id):
+        self.path_to_obj = path_to_obj
+        self.body_id = body_id
 

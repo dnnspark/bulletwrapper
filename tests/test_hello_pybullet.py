@@ -20,12 +20,12 @@ class R2D2CreatorHook(BulletHook):
     def __init__(self):
         self.r2d2_urdf_path = os.path.join(pybullet_data.getDataPath(), 'r2d2.urdf')
 
-    def after_reset(self, pb_state):
+    def after_reset(self, sim):
         start_position = [0,0,1]
         start_rotation = pb.getQuaternionFromEuler([0,0,0])
         self.box_id = pb.loadURDF(self.r2d2_urdf_path, start_position, start_rotation)
 
-    def after_step(self, pb_state, hooks_output):
+    def after_step(self, sim, hooks_output):
 
         position, orientation = pb.getBasePositionAndOrientation(self.box_id)
 
