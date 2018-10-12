@@ -2,6 +2,7 @@ import pybullet as pb
 import collections
 import itertools 
 import re
+from bulletwrapper.dataset import Pose, ObjectPose
 
 class BulletSimulator():
     '''
@@ -95,6 +96,18 @@ class BulletSimulator():
 
         return exit_output
 
+    def get_objects_poses(self):
+
+        object_poses = []
+        for obj_info in self.objects:
+            path_to_obj, body_id = obj_info
+            pos, quat =  pb.getBasePositionAndOrientation(body_id)
+            object_pose = ObjectPose(path_to_obj, Pose(pos, quat))
+
+            object_poses.append(object_pose)
+
+        return object_poses
+
 class InstanceCounterMeta(type):
     '''
     Every instance of the class made using this meta-class has unique id.
@@ -160,9 +173,5 @@ class StopSimulation(Exception):
     pass
 
 
-class ObjectInfo():
-
-    def __init__(self, path_to_obj, body_id):
-        self.path_to_obj = path_to_obj
-        self.body_id = body_id
+ObjectInfo = collections.namedtuple('ObjectInfo', 'path_to_obj body_id')
 

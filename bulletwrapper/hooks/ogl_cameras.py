@@ -28,10 +28,12 @@ class StaticOGLCameraHook(BulletHook):
             light_src = [1,1,1],
             start = np.inf,
             interval = None,
+            dataset_writer=None
         ):
 
         self.start = start 
         self.interval = interval
+        self.dataset_writer = dataset_writer
         self.last_caputured = None
 
         # OpenGL camera parameters
@@ -48,9 +50,14 @@ class StaticOGLCameraHook(BulletHook):
 
     def after_reset(self, sim):
         if sim.sim_time >= self.start:
-            img = self.capture()
+            rgb, depth, label = self.capture()
             self.last_caputured = 0.
-            return img
+
+            if self.dataset_writer is not None:
+                object_poses = sim.get_object_poses()
+                # dataset_writer.write()
+
+            return rgb, depth, label
 
     def after_step(self, sim, hooks_output):
 
@@ -61,17 +68,25 @@ class StaticOGLCameraHook(BulletHook):
                  self.interval is not None and sim_time - self.last_caputured >= self.interval
                  )
             ):
-            img = self.capture()
+            rgb, depth, label = self.capture()
+
             self.last_caputured = sim_time
 
-            return img
+            if self.dataset_writer is not None:
+                object_poses = sim.get_object_poses()
+
+            return rgb, depth, label
 
     def before_end(self, sim, hooks_output):
 
         if self.start == np.inf:
-            img = self.capture()
+            rgb, depth, label = self.capture()
             self.last_caputured = sim.sim_time
-            return img
+
+            if self.dataset_writer is not None:
+                object_poses = sim.get_object_poses()
+
+            return rgb, depth, label
 
     def capture(self):
 
@@ -84,5 +99,7 @@ class StaticOGLCameraHook(BulletHook):
                 )
 
         I = np.uint8( img_arr[2] ).reshape(H,W,4)
+        D = np.float64( img_arr[3] ).reshape(H,W)
+        L = np.uint8( img_arr[4] ).reshape(H,W)
 
-        return I
+        return I, D, L
