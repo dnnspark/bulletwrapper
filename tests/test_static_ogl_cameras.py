@@ -15,7 +15,7 @@ def maybe_collect_images(step_out):
     images = []
     for key in step_out.output.keys():
         if 'static_ogl_camera' in key:
-            I = step_out.output[key]
+            I, D, L = step_out.output[key]
             images.append(I)
     return images
 

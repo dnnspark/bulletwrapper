@@ -2,7 +2,9 @@ import os
 import numpy as np
 import pybullet as pb
 from bulletwrapper import BulletHook
-from bulletwrapper.util.camera_util import ogl_viewmat_from_lookat, ogl_projmat
+from bulletwrapper.util.camera_util import (
+    ogl_viewmat_from_lookat, ogl_projmat, pose_from_lookat)
+from bulletwrapper.dataset import Pose
 
 class StaticOGLCameraHook(BulletHook):
 
@@ -28,15 +30,22 @@ class StaticOGLCameraHook(BulletHook):
             light_src = [1,1,1],
             start = np.inf,
             interval = None,
+            dataset_writer=None
         ):
 
         self.start = start 
         self.interval = interval
+        self.dataset_writer = dataset_writer
         self.last_caputured = None
 
         # OpenGL camera parameters
         self.img_shape = H,W = img_shape
         K = np.reshape(K, (3,3))
+
+        self.K = K
+        R, t = pose_from_lookat(lookat, position, up)
+        self.cam_pose = Pose(t, R)
+
         projmat = ogl_projmat(K, H, W, z_near=.1, z_far=100)
         viewmat = ogl_viewmat_from_lookat(lookat, position, up)
 
@@ -46,32 +55,47 @@ class StaticOGLCameraHook(BulletHook):
 
         self.light_src = light_src
 
-    def after_reset(self, pb_state):
-        if pb_state.sim_time >= self.start:
-            img = self.capture()
-            self.last_caputured = 0.
-            return img
+    def after_reset(self, sim):
+        sim_time = sim.sim_time
+        if sim_time >= self.start:
+            return self.process(sim)
 
-    def after_step(self, pb_state, hooks_output):
+    def after_step(self, sim, hooks_output):
 
-        sim_time = pb_state.sim_time
+        sim_time = sim.sim_time
 
         if sim_time >= self.start and (
             self.last_caputured is None or (
                  self.interval is not None and sim_time - self.last_caputured >= self.interval
                  )
             ):
-            img = self.capture()
-            self.last_caputured = sim_time
 
-            return img
+            return self.process(sim)
 
-    def before_end(self, pb_state, hooks_output):
+    def before_end(self, sim, hooks_output):
 
         if self.start == np.inf:
-            img = self.capture()
-            self.last_caputured = pb_state.sim_time
-            return img
+            return self.process(sim)
+
+    def close(self):
+        if not self.dataset_writer is None:
+            self.dataset_writer.close()
+
+    def process(self, sim):
+
+        rgb, depth, label = self.capture()
+        self.last_caputured = sim.sim_time
+
+        if self.dataset_writer is not None:
+            object_poses = sim.get_object_poses()
+            self.dataset_writer.write(
+                rgb, depth,label,
+                object_poses, 
+                self.cam_pose, self.K,
+                sim.sim_time,
+                )
+
+        return rgb, depth, label
 
     def capture(self):
 
@@ -84,5 +108,7 @@ class StaticOGLCameraHook(BulletHook):
                 )
 
         I = np.uint8( img_arr[2] ).reshape(H,W,4)
+        D = np.float64( img_arr[3] ).reshape(H,W)
+        L = np.uint8( img_arr[4] ).reshape(H,W)
 
-        return I
+        return I, D, L

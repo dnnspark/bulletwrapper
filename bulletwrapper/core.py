@@ -2,6 +2,7 @@ import pybullet as pb
 import collections
 import itertools 
 import re
+from bulletwrapper.dataset import Pose, ObjectPose
 
 class BulletSimulator():
     '''
@@ -37,11 +38,12 @@ class BulletSimulator():
         pb.resetSimulation(self.client_id)
         self.init()
         self.sim_time = 0.
+        self.objects = []
         self.terminated = False
 
         reset_output = HooksOutput()
         for hook in self.hooks:
-            output = hook.after_reset(BulletState(self))
+            output = hook.after_reset(self)
             if output is not None:
                 reset_output.add(hook.id, output)
 
@@ -75,7 +77,7 @@ class BulletSimulator():
 
         step_output = HooksOutput()
         for hook in self.hooks:
-            output = hook.after_step(BulletState(self), step_output)
+            output = hook.after_step(self, step_output)
             if output is not None:
                 step_output.add(hook.id, output)
 
@@ -85,14 +87,29 @@ class BulletSimulator():
 
         exit_output = HooksOutput()
         for hook in self.hooks:
-            output = hook.before_end(BulletState(self), exit_output)
+            output = hook.before_end(self, exit_output)
             if output is not None:
                 exit_output.add(hook.id, output)
+
+        for hook in self.hooks:
+            hook.close()
 
         pb.disconnect()
         self.terminated = True
 
         return exit_output
+
+    def get_object_poses(self):
+
+        object_poses = []
+        for obj_info in self.objects:
+            path_to_obj, body_id = obj_info
+            pos, quat =  pb.getBasePositionAndOrientation(body_id)
+            object_pose = ObjectPose(path_to_obj, Pose(pos, quat))
+
+            object_poses.append(object_pose)
+
+        return object_poses
 
 class InstanceCounterMeta(type):
     '''
@@ -133,22 +150,17 @@ class BulletHook(metaclass=InstanceCounterMeta):
     def id(self):
         return self._id
 
-    def after_reset(self, pb_state):
+    def after_reset(self, sim):
         pass   
 
-    def after_step(self, pb_state, hooks_output):
+    def after_step(self, sim, hooks_output):
         pass   
 
-    def before_end(self, pb_state, hooks_output):
+    def before_end(self, sim, hooks_output):
         pass
 
-class BulletState():
-    '''
-    TODO: add body_ids
-    '''
-
-    def __init__(self, pb_simulator):
-        self.sim_time = pb_simulator.sim_time
+    def close(self):
+        pass
 
 class HooksOutput():
 
@@ -166,4 +178,6 @@ class HooksOutput():
 class StopSimulation(Exception):
     pass
 
+
+ObjectInfo = collections.namedtuple('ObjectInfo', 'path_to_obj body_id')
 
