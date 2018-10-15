@@ -8,8 +8,8 @@ from bulletwrapper.util.bullet_util import add_obj
 class GroundPlaneHook(BulletHook):
 
     def after_reset(self, sim):
-        path_to_plane = pybullet_data.getDataPath()
-        plane_id = pb.loadURDF(os.path.join( path_to_plane, 'plane.urdf'))
+        path_to_plane = os.path.join( pybullet_data.getDataPath(), 'plane.urdf' )
+        plane_id = pb.loadURDF( path_to_plane )
 
         return ObjectInfo(path_to_plane, plane_id)
 
