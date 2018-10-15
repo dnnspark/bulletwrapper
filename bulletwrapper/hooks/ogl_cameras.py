@@ -2,7 +2,9 @@ import os
 import numpy as np
 import pybullet as pb
 from bulletwrapper import BulletHook
-from bulletwrapper.util.camera_util import ogl_viewmat_from_lookat, ogl_projmat
+from bulletwrapper.util.camera_util import (
+    ogl_viewmat_from_lookat, ogl_projmat, pose_from_lookat)
+from bulletwrapper.dataset import Pose
 
 class StaticOGLCameraHook(BulletHook):
 
@@ -39,6 +41,11 @@ class StaticOGLCameraHook(BulletHook):
         # OpenGL camera parameters
         self.img_shape = H,W = img_shape
         K = np.reshape(K, (3,3))
+
+        self.K = K
+        R, t = pose_from_lookat(lookat, position, up)
+        self.cam_pose = Pose(t, R)
+
         projmat = ogl_projmat(K, H, W, z_near=.1, z_far=100)
         viewmat = ogl_viewmat_from_lookat(lookat, position, up)
 
@@ -49,15 +56,9 @@ class StaticOGLCameraHook(BulletHook):
         self.light_src = light_src
 
     def after_reset(self, sim):
-        if sim.sim_time >= self.start:
-            rgb, depth, label = self.capture()
-            self.last_caputured = 0.
-
-            if self.dataset_writer is not None:
-                object_poses = sim.get_object_poses()
-                # dataset_writer.write()
-
-            return rgb, depth, label
+        sim_time = sim.sim_time
+        if sim_time >= self.start:
+            return self.process(sim)
 
     def after_step(self, sim, hooks_output):
 
@@ -68,25 +69,33 @@ class StaticOGLCameraHook(BulletHook):
                  self.interval is not None and sim_time - self.last_caputured >= self.interval
                  )
             ):
-            rgb, depth, label = self.capture()
 
-            self.last_caputured = sim_time
-
-            if self.dataset_writer is not None:
-                object_poses = sim.get_object_poses()
-
-            return rgb, depth, label
+            return self.process(sim)
 
     def before_end(self, sim, hooks_output):
 
         if self.start == np.inf:
-            rgb, depth, label = self.capture()
-            self.last_caputured = sim.sim_time
+            return self.process(sim)
 
-            if self.dataset_writer is not None:
-                object_poses = sim.get_object_poses()
+    def close(self):
+        if not self.dataset_writer is None:
+            self.dataset_writer.close()
 
-            return rgb, depth, label
+    def process(self, sim):
+
+        rgb, depth, label = self.capture()
+        self.last_caputured = sim.sim_time
+
+        if self.dataset_writer is not None:
+            object_poses = sim.get_object_poses()
+            self.dataset_writer.write(
+                rgb, depth,label,
+                object_poses, 
+                self.cam_pose, self.K,
+                sim.sim_time,
+                )
+
+        return rgb, depth, label
 
     def capture(self):
 

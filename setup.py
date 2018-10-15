@@ -22,6 +22,8 @@ REQUIRES_PYTHON = ">=3.4"
 REQUIRED = [
     'pybullet',
     'numpy>=1.13.0',
+    'imageio',
+    'pyyaml',
 ]
 
 # What packages are optional?

@@ -91,12 +91,15 @@ class BulletSimulator():
             if output is not None:
                 exit_output.add(hook.id, output)
 
+        for hook in self.hooks:
+            hook.close()
+
         pb.disconnect()
         self.terminated = True
 
         return exit_output
 
-    def get_objects_poses(self):
+    def get_object_poses(self):
 
         object_poses = []
         for obj_info in self.objects:
@@ -154,6 +157,9 @@ class BulletHook(metaclass=InstanceCounterMeta):
         pass   
 
     def before_end(self, sim, hooks_output):
+        pass
+
+    def close(self):
         pass
 
 class HooksOutput():
