@@ -31,7 +31,7 @@ class OBJCreatorHook(BulletHook):
 
         add_obj_kwargs = self.default_add_obj_kwargs.copy()
         for kw, arg in kwargs.items():
-            assert kw in default_add_obj_kwargs
+            assert kw in self.default_add_obj_kwargs
             add_obj_kwargs[kw] = arg
 
         add_obj_kwargs['path_to_obj'] = path_to_obj

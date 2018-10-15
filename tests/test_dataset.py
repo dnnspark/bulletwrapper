@@ -21,7 +21,7 @@ CONNECT_MODE = pb.DIRECT
 DUCK_OBJ_PATH = os.path.join(pybullet_data.getDataPath(), 'duck.obj')
 
 
-def test_obj_adder_multiple_simultaneous():
+def test_dataset_two_cams():
 
     ground_plane = GroundPlaneHook()
 
