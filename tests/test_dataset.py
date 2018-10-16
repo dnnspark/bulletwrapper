@@ -27,20 +27,23 @@ def test_dataset_two_cams():
 
     duck_1 = OBJCreatorHook(
         path_to_obj = DUCK_OBJ_PATH,
-        position = np.array([-1,-1,2]),
+        position = np.array([-.1,-.1,.2]),
         time_to_create = .3,
+        scale = .05, # duck is 1.54m tall by default; scale down to 7.7 cm.
         )
 
     duck_2 = OBJCreatorHook(
         path_to_obj = DUCK_OBJ_PATH,
-        position = np.array([0,0,4]),
+        position = np.array([0,0,.4]),
         time_to_create = 1.3,
+        scale = 0.1
         )
 
     duck_3 = OBJCreatorHook(
         path_to_obj = DUCK_OBJ_PATH,
-        position = np.array([1,1,6]),
+        position = np.array([.1,.1,.6]),
         time_to_create = 2.3,
+        scale = 0.15
         )
 
 
@@ -62,7 +65,7 @@ def test_dataset_two_cams():
     camera_1 = StaticOGLCameraHook(
         K = [1075.65091572, 0.0, 210.06888344, 0.0, 1073.90347929, 174.72159802, 0.0, 0.0, 1.0],
         img_shape = (400,400),
-        position = np.array([10., 10., 7.]),
+        position = np.array([1., 1., .7]),
         lookat = np.array([0., 0., 0.]),
         up = 'up',
         # start = np.inf,
@@ -74,7 +77,7 @@ def test_dataset_two_cams():
     camera_2 = StaticOGLCameraHook(
         K = [1075.65091572, 0.0, 210.06888344, 0.0, 1073.90347929, 174.72159802, 0.0, 0.0, 1.0],
         img_shape = (400,400),
-        position = np.array([-10., -10., 6.]),
+        position = np.array([-1., -1., .6]),
         lookat = np.array([0., 0., 0.]),
         up = 'up',
         # start = np.inf,

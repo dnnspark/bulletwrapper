@@ -25,6 +25,7 @@ class OBJCreatorHook(BulletHook):
         'fix_base': False,
         'base_mass': .01,
         'base_inertialframe_position': np.zeros(3),
+        'scale': 1.,
     }
 
     def __init__(self, path_to_obj, position, time_to_create=0., **kwargs):
