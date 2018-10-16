@@ -4,13 +4,14 @@ from bulletwrapper.hooks import OBJCreatorHook
 import pybullet_data
 
 PATH_TO_TRAY_OBJ = os.path.join( pybullet_data.getDataPath(), 'tray/tray_textured.obj' )
-TRAY_DIMENSION = 1.155
+# TRAY_DIMENSION = 1.155
+TRAY_DIMENSION = 0.82 # size of bottom side
 
 class TrayOBJHook(OBJCreatorHook):
 
     default_add_obj_kwargs = OBJCreatorHook.default_add_obj_kwargs
 
-    def __init__(self, tray_size=1.155):
+    def __init__(self, tray_size=0.82):
 
         scale = tray_size / TRAY_DIMENSION
 
