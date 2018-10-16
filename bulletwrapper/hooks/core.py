@@ -21,7 +21,7 @@ class OBJCreatorHook(BulletHook):
     '''
     
     default_add_obj_kwargs = {
-        'R': np.eye(3),
+        'rotation': np.eye(3),
         'fix_base': False,
         'base_mass': .01,
         'base_inertialframe_position': np.zeros(3),
