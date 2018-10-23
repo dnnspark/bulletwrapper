@@ -91,13 +91,19 @@ class BulletSimulator():
             if output is not None:
                 exit_output.add(hook.id, output)
 
-        for hook in self.hooks:
-            hook.close()
+        # TODO: where to put this?
+        # for hook in self.hooks:
+        #     hook.close()
+        # pb.disconnect()
 
-        pb.disconnect()
         self.terminated = True
 
         return exit_output
+
+    def close(self):
+        for hook in self.hooks:
+            hook.close()
+        pb.disconnect()
 
     def get_object_poses(self):
 
@@ -135,9 +141,11 @@ class BulletHook(metaclass=InstanceCounterMeta):
         This tells what to do after pb.stepSimulation()
         See BulletSimulation._step()
     3. before_end()
-        This tells what to do before terminating the simulation.
+        This tells what to do before terminating one rollout of the simulation.
         The termination is triggered by time-up, or one of the hook's call for termination.
         See BulletSimulation._terminate().
+    4. close()
+        This tells what to do before closing the simulator.
     '''
 
     def __new__(cls, *args, **kwargs):

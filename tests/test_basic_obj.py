@@ -2,7 +2,7 @@ import os
 import numpy as np
 import pybullet as pb
 from bulletwrapper import BulletSimulator, StopSimulation
-from bulletwrapper.hooks import GroundPlaneHook, OBJCreatorHook
+from bulletwrapper.hooks import GroundPlaneHook, BasicOBJHook
 import pybullet_data
 
 CONNECT_MODE = pb.DIRECT
@@ -10,28 +10,29 @@ CONNECT_MODE = pb.DIRECT
 
 DUCK_OBJ_PATH = os.path.join(pybullet_data.getDataPath(), 'duck.obj')
 
-
 def test_obj_adder_single():
 
     ground_plane = GroundPlaneHook()
 
-    duck = OBJCreatorHook(
+    duck = BasicOBJHook(
         path_to_obj = DUCK_OBJ_PATH,
         position = np.array([0,0,1]),
         )
 
     sim = BulletSimulator(
         mode=CONNECT_MODE,
-        max_time=10.,
+        max_time=2.,
         hooks=[
             ground_plane,
             duck,
             ],
         )
 
-    sim.reset()
-    while sim.running:
-        sim.step() 
+    for _ in range(2):
+        sim.reset()
+        while sim.running:
+            sim.step() 
+    sim.close()
     assert len(sim.objects) == 1
 
 def test_obj_adder_multiple_in_sequence():
@@ -40,27 +41,27 @@ def test_obj_adder_multiple_in_sequence():
 
     height = 3.
 
-    duck_1 = OBJCreatorHook(
+    duck_1 = BasicOBJHook(
         path_to_obj = DUCK_OBJ_PATH,
         position = np.array([0,0,height]),
         time_to_create = 0.,
         )
 
-    duck_2 = OBJCreatorHook(
+    duck_2 = BasicOBJHook(
+        path_to_obj = DUCK_OBJ_PATH,
+        position = np.array([0,0,height]),
+        time_to_create = .5,
+        )
+
+    duck_3 = BasicOBJHook(
         path_to_obj = DUCK_OBJ_PATH,
         position = np.array([0,0,height]),
         time_to_create = 1.,
         )
 
-    duck_3 = OBJCreatorHook(
-        path_to_obj = DUCK_OBJ_PATH,
-        position = np.array([0,0,height]),
-        time_to_create = 2.,
-        )
-
     sim = BulletSimulator(
         mode=CONNECT_MODE,
-        max_time=10.,
+        max_time=3.,
         hooks=[
             ground_plane,
             duck_1,
@@ -71,8 +72,10 @@ def test_obj_adder_multiple_in_sequence():
 
     out = sim.reset()
     assert len(sim.objects) == 1
-    while sim.running:
-        out = sim.step()
+    for _ in range(2):
+        while sim.running:
+            out = sim.step()
+    sim.close()
     assert len(sim.objects) == 3
 
 def test_obj_adder_multiple_simultaneous():
@@ -82,19 +85,19 @@ def test_obj_adder_multiple_simultaneous():
     time_to_create = 1.
 
 
-    duck_1 = OBJCreatorHook(
+    duck_1 = BasicOBJHook(
         path_to_obj = DUCK_OBJ_PATH,
         position = np.array([-1,-1,2]),
         time_to_create = time_to_create,
         )
 
-    duck_2 = OBJCreatorHook(
+    duck_2 = BasicOBJHook(
         path_to_obj = DUCK_OBJ_PATH,
         position = np.array([0,0,4]),
         time_to_create = time_to_create,
         )
 
-    duck_3 = OBJCreatorHook(
+    duck_3 = BasicOBJHook(
         path_to_obj = DUCK_OBJ_PATH,
         position = np.array([1,1,6]),
         time_to_create = time_to_create,
@@ -102,7 +105,7 @@ def test_obj_adder_multiple_simultaneous():
 
     sim = BulletSimulator(
         mode=CONNECT_MODE,
-        max_time=10.,
+        max_time=3.,
         hooks=[
             ground_plane,
             duck_1,
@@ -111,7 +114,9 @@ def test_obj_adder_multiple_simultaneous():
             ],
         )
 
-    out = sim.reset()
-    while sim.running:
-        out = sim.step()
+    for _ in range(2):
+        out = sim.reset()
+        while sim.running:
+            out = sim.step()
+    sim.close()
     assert len(sim.objects) == 3
