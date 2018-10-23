@@ -2,8 +2,8 @@ import numpy as np
 import os
 import pybullet as pb
 import pybullet_data
-from bulletwrapper import BulletSimulator, StopSimulation
-from bulletwrapper.hooks import GroundPlaneHook, OBJCreatorHook
+from bulletwrapper import BulletSimulator
+from bulletwrapper.hooks import GroundPlaneHook, BasicOBJHook
 from bulletwrapper.hooks.ogl_cameras import StaticOGLCameraHook
 
 CONNECT_MODE = pb.DIRECT
@@ -33,19 +33,19 @@ def test_static_opengl_cameras():
 
     height = 3.
 
-    duck_1 = OBJCreatorHook(
+    duck_1 = BasicOBJHook(
         path_to_obj = DUCK_OBJ_PATH,
         position = np.array([0,0,height]),
         time_to_create = 0.,
         )
 
-    duck_2 = OBJCreatorHook(
+    duck_2 = BasicOBJHook(
         path_to_obj = DUCK_OBJ_PATH,
         position = np.array([0,0,height]),
         time_to_create = 1.,
         )
 
-    duck_3 = OBJCreatorHook(
+    duck_3 = BasicOBJHook(
         path_to_obj = DUCK_OBJ_PATH,
         position = np.array([0,0,height]),
         time_to_create = 2.,
@@ -86,24 +86,28 @@ def test_static_opengl_cameras():
             ],
         )
 
-    num_images = 0
 
-    out = sim.reset()
 
-    images = maybe_collect_images(out)
-    for I in images:
-        assert I.shape == (400,400,4)
-    num_images += len(images)
-
-    while sim.running:
-        out = sim.step()
+    for _ in range(2):
+        out = sim.reset()
+        num_images = 0
 
         images = maybe_collect_images(out)
         for I in images:
             assert I.shape == (400,400,4)
         num_images += len(images)
 
-    assert num_images == 100
+        while sim.running:
+            out = sim.step()
+
+            images = maybe_collect_images(out)
+            for I in images:
+                assert I.shape == (400,400,4)
+            num_images += len(images)
+
+        assert num_images == 100
+
+    sim.close()
 
 
 def test_static_opengl_cameras_one_final_shot():
@@ -111,24 +115,23 @@ def test_static_opengl_cameras_one_final_shot():
     Identical to above, but take only one pictures before simulation terminates (start=np.inf).
     '''
 
-    # copy-and-paste
     ground_plane = GroundPlaneHook()
 
     height = 3.
 
-    duck_1 = OBJCreatorHook(
+    duck_1 = BasicOBJHook(
         path_to_obj = DUCK_OBJ_PATH,
         position = np.array([0,0,height]),
         time_to_create = 0.,
         )
 
-    duck_2 = OBJCreatorHook(
+    duck_2 = BasicOBJHook(
         path_to_obj = DUCK_OBJ_PATH,
         position = np.array([0,0,height]),
         time_to_create = 1.,
         )
 
-    duck_3 = OBJCreatorHook(
+    duck_3 = BasicOBJHook(
         path_to_obj = DUCK_OBJ_PATH,
         position = np.array([0,0,height]),
         time_to_create = 2.,
@@ -165,45 +168,50 @@ def test_static_opengl_cameras_one_final_shot():
             ],
         )
 
-    out = sim.reset()
 
-    images = maybe_collect_images(out)
-    assert len(images) == 0
 
-    while sim.running:
-        out = sim.step()
+    for _ in range(2):
+        out = sim.reset()
+        num_images = 0
 
         images = maybe_collect_images(out)
-        if len(images) > 0:
-            assert len(images) == 2
-            assert sim.terminated
-            for I in images:
-                assert I.shape == (400,400,4)
+        assert len(images) == 0
+
+        while sim.running:
+            out = sim.step()
+
+            images = maybe_collect_images(out)
+            if len(images) > 0:
+                assert len(images) == 2
+                assert sim.terminated
+                for I in images:
+                    assert I.shape == (400,400,4)
+
+    sim.close()
 
 
 def test_static_opengl_cameras_one_shot_at_2s():
     '''
-    Identical to above, but take only one pictures before simulation terminates (start=np.inf).
+    Identical to above, but take only one pictures at t=2s
     '''
 
-    # copy-and-paste
     ground_plane = GroundPlaneHook()
 
     height = 3.
 
-    duck_1 = OBJCreatorHook(
+    duck_1 = BasicOBJHook(
         path_to_obj = DUCK_OBJ_PATH,
         position = np.array([0,0,height]),
         time_to_create = 0.,
         )
 
-    duck_2 = OBJCreatorHook(
+    duck_2 = BasicOBJHook(
         path_to_obj = DUCK_OBJ_PATH,
         position = np.array([0,0,height]),
         time_to_create = 1.,
         )
 
-    duck_3 = OBJCreatorHook(
+    duck_3 = BasicOBJHook(
         path_to_obj = DUCK_OBJ_PATH,
         position = np.array([0,0,height]),
         time_to_create = 2.,
@@ -240,23 +248,28 @@ def test_static_opengl_cameras_one_shot_at_2s():
             ],
         )
 
-    out = sim.reset()
 
-    images = maybe_collect_images(out)
-    assert len(images) == 0
+    for _ in range(2):
 
-    num_images = 0
-
-    while sim.running:
-        out = sim.step()
+        out = sim.reset()
 
         images = maybe_collect_images(out)
-        num_images += len(images)
-        if len(images) > 0:
-            assert len(images) == 2
-            assert sim.sim_time - 2. < 0.003
-            for I in images:
-                assert I.shape == (400,400,4)
+        assert len(images) == 0
 
-    assert num_images == 2
+        num_images = 0
+
+        while sim.running:
+            out = sim.step()
+
+            images = maybe_collect_images(out)
+            num_images += len(images)
+            if len(images) > 0:
+                assert len(images) == 2
+                assert sim.sim_time - 2. < 0.003
+                for I in images:
+                    assert I.shape == (400,400,4)
+
+        assert num_images == 2
+
+    sim.close()
 

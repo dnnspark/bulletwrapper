@@ -46,9 +46,3 @@ def test_r2d2():
     sim.reset()
     while not sim.terminated:
         output = sim.step()
-
-    # while True:
-    #     try:
-    #         sim.step()
-    #     except StopSimulation:
-    #         break;

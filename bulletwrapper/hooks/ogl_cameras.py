@@ -27,6 +27,8 @@ class StaticOGLCameraHook(BulletHook):
             position,
             lookat = np.array([0., 0., 0.]),
             up = 'up',
+            renderer = pb.ER_TINY_RENDERER,
+            # renderer = pb.ER_BULLET_HARDWARE_OPENGL,
             light_src = [1,1,1],
             start = np.inf,
             interval = None,
@@ -53,10 +55,12 @@ class StaticOGLCameraHook(BulletHook):
         self.pb_P = list(projmat.T.ravel())
         self.pb_V = list(viewmat.T.ravel())
 
+        self.renderer = renderer
         self.light_src = light_src
 
     def after_reset(self, sim):
         sim_time = sim.sim_time
+        self.last_caputured = None
         if sim_time >= self.start:
             return self.process(sim)
 
@@ -104,7 +108,7 @@ class StaticOGLCameraHook(BulletHook):
         light_src = self.light_src
         img_arr = pb.getCameraImage(
                 W, H, pb_V, pb_P, 
-                shadow=1, lightDirection=light_src, renderer=pb.ER_BULLET_HARDWARE_OPENGL,
+                shadow=1, lightDirection=light_src, renderer=self.renderer,
                 )
 
         I = np.uint8( img_arr[2] ).reshape(H,W,4)
