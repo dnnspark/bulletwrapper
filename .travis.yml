@@ -9,7 +9,8 @@ python:
   - "3.6"
 
 install: 
-  - make install_dev
+  - make install_core
+  - make install_test
   
 script: 
   - make ci
