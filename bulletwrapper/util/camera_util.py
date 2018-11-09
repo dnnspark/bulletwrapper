@@ -126,7 +126,10 @@ def ogl_projmat(K, H, W, z_near=0.1,  z_far=1000., inv=False):
     A_blocks, b_blocks = list(zip(*blocks))
     A = np.concatenate(A_blocks, axis=0)
     b = np.concatenate(b_blocks)
-    h = np.linalg.lstsq(A,b, rcond=None)[0]
+    try:
+        h = np.linalg.lstsq(A,b, rcond=None)[0]
+    except:
+        h = np.linalg.lstsq(A,b, rcond=-1)[0]
     H = np.insert(h, -1, -1).reshape(4,4)
 
     return H
