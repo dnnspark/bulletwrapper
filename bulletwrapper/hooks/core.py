@@ -16,7 +16,7 @@ class GroundPlaneHook(BulletHook):
         path_to_plane = os.path.join( pybullet_data.getDataPath(), 'plane.urdf' )
         plane_id = pb.loadURDF( path_to_plane )
 
-        return ObjectInfo(path_to_plane, plane_id, 'plane')
+        return ObjectInfo(path_to_plane, 1., plane_id, 'plane')
 
 def _make_str_list(x):
     '''
@@ -128,19 +128,20 @@ class OBJCreatorHook(BulletHook):
         self.add_obj_kwargs = add_obj_kwargs
 
         self.path_to_obj = add_obj_kwargs['path_to_obj']
+        self.mesh_scale = add_obj_kwargs['scale']
         self.set_time_to_create()
 
         self.created = False
         if sim.sim_time >= self.time_to_create:
             body_id = self.create()
-            obj_info = ObjectInfo( self.path_to_obj, body_id, self.category_name )
+            obj_info = ObjectInfo( self.path_to_obj, self.mesh_scale, body_id, self.category_name )
             sim.objects.append(obj_info)
             return obj_info
 
     def after_step(self, sim, hooks_output):
         if not self.created and sim.sim_time >= self.time_to_create:
             body_id = self.create()
-            obj_info = ObjectInfo( self.path_to_obj, body_id, self.category_name )
+            obj_info = ObjectInfo( self.path_to_obj, self.mesh_scale, body_id, self.category_name )
             sim.objects.append(obj_info)
             return obj_info
 

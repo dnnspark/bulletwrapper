@@ -24,6 +24,7 @@ REQUIRED = [
     'numpy>=1.13.0',
     'imageio',
     'pyyaml',
+    'opencv-python',
 ]
 
 # What packages are optional?

@@ -11,6 +11,11 @@ from bulletwrapper.dataset import DatasetWriter
 import pybullet_data
 from imageio import imread
 
+from bulletwrapper.util.project_util import project_mesh
+from bulletwrapper.util.transform_util import chain_Rts as chain
+from bulletwrapper.util.transformations import quaternion_matrix as quat2R
+from bulletwrapper.util import object_loader
+
 VIS = False
 # VIS = True
 if VIS:
@@ -65,6 +70,7 @@ def test_dataset_two_cams():
         )
 
     cache_dir = tempfile.mkdtemp()
+    print('\ncache_dir: %s' % cache_dir)
 
     dataset_writer_1 = DatasetWriter(
         path_to_dataset = cache_dir,
@@ -130,29 +136,74 @@ def test_dataset_two_cams():
     with open( os.path.join(cache_dir, 'anno_c2.yml') ) as f:
         anno_c2 = yaml.load(f)
 
-    for ann1, ann2 in zip(anno_c1, anno_c2):
-        rgb1 = imread( os.path.join(cache_dir, ann1['path_to_rgb']) )
-        rgb2 = imread( os.path.join(cache_dir, ann2['path_to_rgb']) )
-        assert rgb1.shape == (400,400,4)
-        assert rgb2.shape == (400,400,4)
 
-        depth1 = imread( os.path.join(cache_dir, ann1['path_to_depth']) )
-        depth2 = imread( os.path.join(cache_dir, ann2['path_to_depth']) )
-        assert depth1.shape == (400,400)
-        assert depth2.shape == (400,400)
+    for anno in [anno_c1, anno_c2]:
 
-        label1 = imread( os.path.join(cache_dir, ann1['path_to_label']) )
-        label2 = imread( os.path.join(cache_dir, ann2['path_to_label']) )
-        assert label1.shape == (400,400)
-        assert label2.shape == (400,400)
+        for example in anno:
+            rgb = imread( os.path.join(cache_dir, example['path_to_rgb']) )
+            depth = imread( os.path.join(cache_dir, example['path_to_depth']) )
+            labels = imread( os.path.join( cache_dir, example['path_to_label'] ) )
 
-        if VIS:
-            plt.figure(1), plt.clf(), plt.imshow(np.concatenate([rgb1, rgb2], axis=1))
-            plt.figure(2), plt.clf(), plt.imshow(np.concatenate([depth1, depth2], axis=1))
-            plt.figure(3), plt.clf(), plt.imshow(np.concatenate([label1, label2], axis=1))
-            plt.show(block=False)
-            plt.pause(.5)
+            K = np.reshape(example['intrinsics'], (3,3))
+            img_shape = (400,400)
 
-    print('\ncache_dir: %s' % cache_dir)
-    assert set( np.unique(label1) ) == set([0,1,2,3,4])
-    assert set( np.unique(label2) ) == set([0,1,2,3,4])
+            world_to_cam = example['world_to_cam']
+            world_to_cam = (quat2R(world_to_cam['R'])[:3,:3],  np.array(world_to_cam['t']) )
+
+            projected_foreground = np.zeros(img_shape)
+            for obj in example['objects']:
+                if obj['category_name'] in ['plane', 'tray']:
+                    continue
+
+                mesh_scale = obj['mesh_scale']
+
+                mesh = object_loader.OBJFile( os.path.join(cache_dir, obj['path_to_obj']), None)
+                mesh.vertices = [ [mesh_scale * x for x in v] for v in mesh.vertices ]
+                object_to_world = obj['object_to_world']
+                object_to_world = (quat2R(object_to_world['R'])[:3,:3],  np.array(object_to_world['t']) )
+                object_to_cam = chain(object_to_world, world_to_cam)
+                R,t = object_to_cam
+                mask = project_mesh(mesh, R, t, K, img_shape)
+                projected_foreground[mask>0] = 1.
+
+            foreground_from_labels = np.float32(labels > 1)
+
+            inter = np.float32( np.logical_and(projected_foreground>0, foreground_from_labels>0) )
+            union = np.float32( np.logical_or(projected_foreground>0, foreground_from_labels>0) )
+
+            overlap = inter.sum() / union.sum()
+
+            assert overlap > .9
+
+
+
+    # for ann1, ann2 in zip(anno_c1, anno_c2):
+    #     rgb1 = imread( os.path.join(cache_dir, ann1['path_to_rgb']) )
+    #     rgb2 = imread( os.path.join(cache_dir, ann2['path_to_rgb']) )
+    #     assert rgb1.shape == (400,400,4)
+    #     assert rgb2.shape == (400,400,4)
+
+    #     depth1 = imread( os.path.join(cache_dir, ann1['path_to_depth']) )
+    #     depth2 = imread( os.path.join(cache_dir, ann2['path_to_depth']) )
+    #     assert depth1.shape == (400,400)
+    #     assert depth2.shape == (400,400)
+
+    #     label1 = imread( os.path.join(cache_dir, ann1['path_to_label']) )
+    #     label2 = imread( os.path.join(cache_dir, ann2['path_to_label']) )
+    #     assert label1.shape == (400,400)
+    #     assert label2.shape == (400,400)
+
+    #     if VIS:
+    #         plt.figure(1), plt.clf(), plt.imshow(np.concatenate([rgb1, rgb2], axis=1))
+    #         plt.figure(2), plt.clf(), plt.imshow(np.concatenate([depth1, depth2], axis=1))
+    #         plt.figure(3), plt.clf(), plt.imshow(np.concatenate([label1, label2], axis=1))
+    #         plt.show(block=False)
+    #         plt.pause(.5)
+
+    # print('\ncache_dir: %s' % cache_dir)
+    # assert set( np.unique(label1) ) == set([0,1,2,3,4])
+    # assert set( np.unique(label2) ) == set([0,1,2,3,4])
+
+
+
+

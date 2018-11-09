@@ -28,15 +28,17 @@ class Pose():
 
 class ObjectPose():
 
-    def __init__(self, path_to_obj, pose, category_name):
+    def __init__(self, path_to_obj, mesh_scale, pose, category_name):
         self.path_to_obj = path_to_obj
+        self.mesh_scale = mesh_scale
         self.pose = pose
         self.category_name = category_name
 
     def to_dict(self):
         dct = {
             'path_to_obj': self.path_to_obj,
-            'pose': self.pose.to_dict(),
+            'mesh_scale': self.mesh_scale,
+            'object_to_world': self.pose.to_dict(),
             'category_name': self.category_name,
         }
         return dct
@@ -89,7 +91,7 @@ class Example():
             'max_depth': float(self.max_depth),
 
             'objects': [obj_pose.to_dict() for obj_pose in self.object_poses],
-            'cam_pose': self.cam_pose.to_dict(),
+            'world_to_cam': self.cam_pose.to_dict(),
             'intrinsics': K,
         }
         if self.sim_time is not None:

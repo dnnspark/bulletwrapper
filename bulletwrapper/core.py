@@ -109,9 +109,9 @@ class BulletSimulator():
 
         object_poses = []
         for obj_info in self.objects:
-            path_to_obj, body_id, category_name = obj_info
+            path_to_obj, mesh_scale, body_id, category_name = obj_info
             pos, quat =  pb.getBasePositionAndOrientation(body_id)
-            object_pose = ObjectPose(path_to_obj, Pose(pos, quat), category_name)
+            object_pose = ObjectPose(path_to_obj, mesh_scale, Pose(pos, quat), category_name)
 
             object_poses.append(object_pose)
 
@@ -187,5 +187,5 @@ class StopSimulation(Exception):
     pass
 
 
-ObjectInfo = collections.namedtuple('ObjectInfo', 'path_to_obj body_id category_name')
+ObjectInfo = collections.namedtuple('ObjectInfo', 'path_to_obj mesh_scale body_id category_name')
 
