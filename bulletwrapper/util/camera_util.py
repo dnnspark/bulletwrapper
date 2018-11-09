@@ -1,11 +1,12 @@
 import numpy as np
 from bulletwrapper.util.transform_util import normalize, to_4x4
 from bulletwrapper.util.transform_util import chain_Rts as chain
+from bulletwrapper.util.transform_util import inv_Rt as inv
 
 
 def pose_from_lookat(target, camera_location, camera_up='up'):
     '''
-    Compute camera pose in world coordinate, given 
+    Compute world-to-cam pose, given 
         1) 3d position of camera,
         2) its look-at point,
             1) and 2) are in world coordinate.
@@ -25,12 +26,18 @@ def pose_from_lookat(target, camera_location, camera_up='up'):
     xaxis = normalize( np.cross(zaxis, np.array(up)) )
     yaxis = np.cross(zaxis, xaxis)
 
-    R = np.array([xaxis, yaxis, zaxis])
-    t = -np.dot(R, np.reshape(camera_location, (3,1))).ravel()
+    # R = np.array([xaxis, yaxis, zaxis])
+    # t = -np.dot(R, np.reshape(camera_location, (3,1))).ravel()
 
-    return R, t
+    R = np.array([xaxis, yaxis, zaxis]).T
+    t = np.array(camera_location)
 
-def ogl_viewmat(R, t):
+    cam_to_world = (R,t)
+    world_to_cam = inv(*cam_to_world)
+
+    return world_to_cam
+
+def ogl_viewmat(world_to_cam):
     '''
     Convert camera pose in world coordinate to OpenGL view matrix.
     Pinhole camera coordinate and OpenGL camera coordinate is different by
@@ -44,17 +51,17 @@ def ogl_viewmat(R, t):
     Rx[0,0] = 1.
     tx = np.zeros(3)
 
-    view = chain( (R,t), (Rx,tx))
+    view = chain( world_to_cam, (Rx,tx))
     V = to_4x4(*view)
 
     return V
 
 def ogl_viewmat_from_lookat(target, camera_location, camera_up='up'):
 
-    camera_pose = pose_from_lookat(target, camera_location, camera_up)
-    return ogl_viewmat(*camera_pose)
+    world_to_cam = pose_from_lookat(target, camera_location, camera_up)
+    return ogl_viewmat(world_to_cam)
 
-def ogl_projmat(K, H, W, z_near=0.1,  z_far=100., inv=False):
+def ogl_projmat(K, H, W, z_near=0.1,  z_far=1000., inv=False):
     '''
     Convert camera intrinsics to OpenGL projection matrix.
     '''
