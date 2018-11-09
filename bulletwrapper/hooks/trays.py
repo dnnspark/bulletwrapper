@@ -23,6 +23,7 @@ class TrayHook(OBJCreatorHook):
 
         self._time_to_create = 0.
         self.kwargs_setters = kwargs_setters
+        self.category_name = 'tray'
 
 class RandomTexturedTrayHook(OBJCreatorHook):
 
@@ -38,4 +39,5 @@ class RandomTexturedTrayHook(OBJCreatorHook):
 
         self._time_to_create = 0.
         self.kwargs_setters = kwargs_setters
+        self.category_name = 'tray'
 

@@ -34,18 +34,21 @@ def test_static_opengl_cameras():
     height = 3.
 
     duck_1 = BasicOBJHook(
+        category_name = 'rubber_duck',
         path_to_obj = DUCK_OBJ_PATH,
         position = np.array([0,0,height]),
         time_to_create = 0.,
         )
 
     duck_2 = BasicOBJHook(
+        category_name = 'rubber_duck',
         path_to_obj = DUCK_OBJ_PATH,
         position = np.array([0,0,height]),
         time_to_create = 1.,
         )
 
     duck_3 = BasicOBJHook(
+        category_name = 'rubber_duck',
         path_to_obj = DUCK_OBJ_PATH,
         position = np.array([0,0,height]),
         time_to_create = 2.,
@@ -120,18 +123,21 @@ def test_static_opengl_cameras_one_final_shot():
     height = 3.
 
     duck_1 = BasicOBJHook(
+        category_name = 'rubber_duck',
         path_to_obj = DUCK_OBJ_PATH,
         position = np.array([0,0,height]),
         time_to_create = 0.,
         )
 
     duck_2 = BasicOBJHook(
+        category_name = 'rubber_duck',
         path_to_obj = DUCK_OBJ_PATH,
         position = np.array([0,0,height]),
         time_to_create = 1.,
         )
 
     duck_3 = BasicOBJHook(
+        category_name = 'rubber_duck',
         path_to_obj = DUCK_OBJ_PATH,
         position = np.array([0,0,height]),
         time_to_create = 2.,
@@ -200,18 +206,21 @@ def test_static_opengl_cameras_one_shot_at_2s():
     height = 3.
 
     duck_1 = BasicOBJHook(
+        category_name = 'rubber_duck',
         path_to_obj = DUCK_OBJ_PATH,
         position = np.array([0,0,height]),
         time_to_create = 0.,
         )
 
     duck_2 = BasicOBJHook(
+        category_name = 'rubber_duck',
         path_to_obj = DUCK_OBJ_PATH,
         position = np.array([0,0,height]),
         time_to_create = 1.,
         )
 
     duck_3 = BasicOBJHook(
+        category_name = 'rubber_duck',
         path_to_obj = DUCK_OBJ_PATH,
         position = np.array([0,0,height]),
         time_to_create = 2.,

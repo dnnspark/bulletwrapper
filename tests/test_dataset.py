@@ -35,6 +35,7 @@ def test_dataset_two_cams():
         )
 
     duck_1 = RandomFreeFallObject(
+        category_name = 'rubber_duck',
         path_to_obj = DUCK_OBJ_PATH,
         x = (-.05, .05),
         y = (-.05, .05),
@@ -44,6 +45,7 @@ def test_dataset_two_cams():
         )
 
     duck_2 = RandomFreeFallObject(
+        category_name = 'rubber_duck',
         path_to_obj = DUCK_OBJ_PATH,
         x = (-.05, .05),
         y = (-.05, .05),
@@ -53,6 +55,7 @@ def test_dataset_two_cams():
         )
 
     duck_3 = RandomFreeFallObject(
+        category_name = 'rubber_duck',
         path_to_obj = DUCK_OBJ_PATH,
         x = (-.05, .05),
         y = (-.05, .05),

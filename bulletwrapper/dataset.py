@@ -28,14 +28,16 @@ class Pose():
 
 class ObjectPose():
 
-    def __init__(self, path_to_obj, pose):
+    def __init__(self, path_to_obj, pose, category_name):
         self.path_to_obj = path_to_obj
         self.pose = pose
+        self.category_name = category_name
 
     def to_dict(self):
         dct = {
             'path_to_obj': self.path_to_obj,
             'pose': self.pose.to_dict(),
+            'category_name': self.category_name,
         }
         return dct
 

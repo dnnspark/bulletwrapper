@@ -15,6 +15,7 @@ def test_obj_adder_single():
     ground_plane = GroundPlaneHook()
 
     duck = BasicOBJHook(
+        category_name = 'rubber_duck',
         path_to_obj = DUCK_OBJ_PATH,
         position = np.array([0,0,1]),
         )
@@ -42,18 +43,21 @@ def test_obj_adder_multiple_in_sequence():
     height = 3.
 
     duck_1 = BasicOBJHook(
+        category_name = 'rubber_duck',
         path_to_obj = DUCK_OBJ_PATH,
         position = np.array([0,0,height]),
         time_to_create = 0.,
         )
 
     duck_2 = BasicOBJHook(
+        category_name = 'rubber_duck',
         path_to_obj = DUCK_OBJ_PATH,
         position = np.array([0,0,height]),
         time_to_create = .5,
         )
 
     duck_3 = BasicOBJHook(
+        category_name = 'rubber_duck',
         path_to_obj = DUCK_OBJ_PATH,
         position = np.array([0,0,height]),
         time_to_create = 1.,
@@ -86,18 +90,21 @@ def test_obj_adder_multiple_simultaneous():
 
 
     duck_1 = BasicOBJHook(
+        category_name = 'rubber_duck',
         path_to_obj = DUCK_OBJ_PATH,
         position = np.array([-1,-1,2]),
         time_to_create = time_to_create,
         )
 
     duck_2 = BasicOBJHook(
+        category_name = 'rubber_duck',
         path_to_obj = DUCK_OBJ_PATH,
         position = np.array([0,0,4]),
         time_to_create = time_to_create,
         )
 
     duck_3 = BasicOBJHook(
+        category_name = 'rubber_duck',
         path_to_obj = DUCK_OBJ_PATH,
         position = np.array([1,1,6]),
         time_to_create = time_to_create,
