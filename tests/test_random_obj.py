@@ -42,6 +42,7 @@ def test_duck_on_plane():
         )
 
     duck = RandomFreeFallObject(
+        category_name = 'rubber_duck',
         path_to_obj = DUCK_OBJ_PATH,
         x = (-.1, .1),
         y = (-.1, .1),
@@ -80,6 +81,7 @@ def test_ducks_on_tray_on_plane():
         )
 
     duck_1 = RandomFreeFallObject(
+        category_name = 'rubber_duck',
         path_to_obj = DUCK_OBJ_PATH,
         x = (-.1, .1),
         y = (-.1, .1),
@@ -89,6 +91,7 @@ def test_ducks_on_tray_on_plane():
         )
 
     duck_2 = RandomFreeFallObject(
+        category_name = 'rubber_duck',
         path_to_obj = DUCK_OBJ_PATH,
         x = (-.1, .1),
         y = (-.1, .1),
@@ -98,6 +101,7 @@ def test_ducks_on_tray_on_plane():
         )
 
     duck_3 = RandomFreeFallObject(
+        category_name = 'rubber_duck',
         path_to_obj = DUCK_OBJ_PATH,
         x = (-.1, .1),
         y = (-.1, .1),

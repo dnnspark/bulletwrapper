@@ -16,7 +16,7 @@ class GroundPlaneHook(BulletHook):
         path_to_plane = os.path.join( pybullet_data.getDataPath(), 'plane.urdf' )
         plane_id = pb.loadURDF( path_to_plane )
 
-        return ObjectInfo(path_to_plane, plane_id)
+        return ObjectInfo(path_to_plane, 1., plane_id, 'plane')
 
 def _make_str_list(x):
     '''
@@ -96,9 +96,10 @@ class OBJCreatorHook(BulletHook):
         'rgb': None,
     }
 
-    def __init__(self, time_to_create, kwargs_setters):
+    def __init__(self, time_to_create, kwargs_setters, category_name):
         self._time_to_create = time_to_create
         self.kwargs_setters = kwargs_setters
+        self.category_name = category_name
 
     def create(self):
         body_id = add_obj(**self.add_obj_kwargs)
@@ -127,19 +128,20 @@ class OBJCreatorHook(BulletHook):
         self.add_obj_kwargs = add_obj_kwargs
 
         self.path_to_obj = add_obj_kwargs['path_to_obj']
+        self.mesh_scale = add_obj_kwargs['scale']
         self.set_time_to_create()
 
         self.created = False
         if sim.sim_time >= self.time_to_create:
             body_id = self.create()
-            obj_info = ObjectInfo( self.path_to_obj, body_id )
+            obj_info = ObjectInfo( self.path_to_obj, self.mesh_scale, body_id, self.category_name )
             sim.objects.append(obj_info)
             return obj_info
 
     def after_step(self, sim, hooks_output):
         if not self.created and sim.sim_time >= self.time_to_create:
             body_id = self.create()
-            obj_info = ObjectInfo( self.path_to_obj, body_id )
+            obj_info = ObjectInfo( self.path_to_obj, self.mesh_scale, body_id, self.category_name )
             sim.objects.append(obj_info)
             return obj_info
 
@@ -148,12 +150,13 @@ def _identity(x):
 
 class BasicOBJHook(OBJCreatorHook):
 
-    def __init__(self, time_to_create=0., **kwargs):
+    def __init__(self, category_name, time_to_create=0., **kwargs):
 
         self._time_to_create = time_to_create
 
         kwargs_setters = {kw: partial(_identity, x=arg) for kw, arg in kwargs.items()}
         self.kwargs_setters = kwargs_setters
+        self.category_name = category_name
 
 class TexturedGroundPlaneHook(OBJCreatorHook):
     '''
@@ -176,6 +179,7 @@ class TexturedGroundPlaneHook(OBJCreatorHook):
 
         self._time_to_create = 0.
         self.kwargs_setters = kwargs_setters
+        self.category_name = 'plane'
 
 class RandomTexturedGroundPlaneHook(OBJCreatorHook):
     '''
@@ -197,6 +201,7 @@ class RandomTexturedGroundPlaneHook(OBJCreatorHook):
 
         self._time_to_create = 0.
         self.kwargs_setters = kwargs_setters
+        self.category_name = 'plane'
 
 
 class RandomFreeFallObject(OBJCreatorHook):
@@ -206,7 +211,7 @@ class RandomFreeFallObject(OBJCreatorHook):
         - fixed scale
     '''
 
-    def __init__(self, path_to_obj, time_to_create=0., x=0., y=0., height=1., scale=1.):
+    def __init__(self, category_name, path_to_obj, time_to_create=0., x=0., y=0., height=1., scale=1.):
 
         kwargs_setters = {
             'path_to_obj': partial(random_obj_file, obj_files=path_to_obj),
@@ -217,4 +222,5 @@ class RandomFreeFallObject(OBJCreatorHook):
 
         self._time_to_create = time_to_create
         self.kwargs_setters = kwargs_setters
+        self.category_name = category_name
 

@@ -28,14 +28,18 @@ class Pose():
 
 class ObjectPose():
 
-    def __init__(self, path_to_obj, pose):
+    def __init__(self, path_to_obj, mesh_scale, pose, category_name):
         self.path_to_obj = path_to_obj
+        self.mesh_scale = mesh_scale
         self.pose = pose
+        self.category_name = category_name
 
     def to_dict(self):
         dct = {
             'path_to_obj': self.path_to_obj,
-            'pose': self.pose.to_dict(),
+            'mesh_scale': self.mesh_scale,
+            'object_to_world': self.pose.to_dict(),
+            'category_name': self.category_name,
         }
         return dct
 
@@ -50,7 +54,7 @@ class Example():
         - min_depth: float
         - max_depth: float
         - object_poses: [ObjectPose]
-        - cam_pose: Pose
+        - world_to_cam: Pose
         - intrinsics: list
         - sim_time: float
     '''
@@ -58,7 +62,7 @@ class Example():
     def __init__(self, 
             path_to_rgb, path_to_depth, path_to_label, 
             min_depth, max_depth,
-            object_poses, cam_pose, K,
+            object_poses, world_to_cam, K,
             sim_time):
 
         self.path_to_rgb = path_to_rgb
@@ -67,7 +71,7 @@ class Example():
         self.min_depth = min_depth
         self.max_depth = max_depth
         self.object_poses = object_poses
-        self.cam_pose = cam_pose
+        self.world_to_cam = world_to_cam 
         self.K = K
         self.sim_time = sim_time
 
@@ -87,7 +91,7 @@ class Example():
             'max_depth': float(self.max_depth),
 
             'objects': [obj_pose.to_dict() for obj_pose in self.object_poses],
-            'cam_pose': self.cam_pose.to_dict(),
+            'world_to_cam': self.world_to_cam.to_dict(),
             'intrinsics': K,
         }
         if self.sim_time is not None:
@@ -104,7 +108,7 @@ class DatasetWriter():
     dataset_writer.write(
         rgb, depth, label,
         object_poses, 
-        cam_pose, K,
+        world_to_cam, K,
         )
     '''
 
@@ -165,7 +169,7 @@ class DatasetWriter():
         return _filename
 
 
-    def write(self, rgb, depth, label, object_poses, cam_pose, K, sim_time=None):
+    def write(self, rgb, depth, label, object_poses, world_to_cam, K, sim_time=None):
 
         idx = self.idx
 
@@ -180,7 +184,7 @@ class DatasetWriter():
             min_depth,
             max_depth,
             object_poses,
-            cam_pose,
+            world_to_cam,
             K,
             sim_time,
             )

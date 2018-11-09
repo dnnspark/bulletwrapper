@@ -44,6 +44,7 @@ def test_tray_tless():
         obj_id = np.random.choice([1,10])
 
         tless_obj = RandomFreeFallObject(
+            category_name = 'tless_obj_%02d' % obj_id,
             path_to_obj = TLESS_OBJ_PATH % obj_id,
             x = (-.05, .05),
             y = (-.05, .05),

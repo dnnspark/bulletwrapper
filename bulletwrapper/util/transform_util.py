@@ -31,3 +31,8 @@ def chain_Rts( *Rts ):
         T = np.dot(_T, T)
 
     return T[:3,:3], T[:3,-1]
+    
+def inv_Rt(R, t):
+    R2 = R.T
+    t2 = -np.dot(R2, t)
+    return R2, t2
