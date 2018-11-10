@@ -4,7 +4,7 @@ import pybullet as pb
 import pybullet_data
 from bulletwrapper import BulletSimulator
 from bulletwrapper.hooks import GroundPlaneHook, BasicOBJHook
-from bulletwrapper.hooks.ogl_cameras import StaticOGLCameraHook
+from bulletwrapper.hooks.ogl_cameras import StaticOGLCameraHook, RandomStaticCameraHook
 
 CONNECT_MODE = pb.DIRECT
 # CONNECT_MODE = pb.GUI
@@ -14,7 +14,7 @@ DUCK_OBJ_PATH = os.path.join(pybullet_data.getDataPath(), 'duck.obj')
 def maybe_collect_images(step_out):
     images = []
     for key in step_out.output.keys():
-        if 'static_ogl_camera' in key:
+        if 'static_ogl_camera' in key or 'random_static_camera' in key:
             I, D, L = step_out.output[key]
             images.append(I)
     return images
@@ -258,6 +258,7 @@ def test_static_opengl_cameras_one_shot_at_2s():
         )
 
 
+    images_in_all_rollouts = []
     for _ in range(2):
 
         out = sim.reset()
@@ -265,20 +266,112 @@ def test_static_opengl_cameras_one_shot_at_2s():
         images = maybe_collect_images(out)
         assert len(images) == 0
 
-        num_images = 0
+        # num_images = 0
+        images_in_rollout = []
 
         while sim.running:
             out = sim.step()
 
             images = maybe_collect_images(out)
-            num_images += len(images)
             if len(images) > 0:
-                assert len(images) == 2
-                assert sim.sim_time - 2. < 0.003
-                for I in images:
-                    assert I.shape == (400,400,4)
-
-        assert num_images == 2
+                images_in_rollout.extend(images)
+        images_in_all_rollouts.append(images_in_rollout)
 
     sim.close()
+
+    # images across different rollout should be same.
+    assert np.allclose(images_in_all_rollouts[0][0], images_in_all_rollouts[1][0])
+    assert np.allclose(images_in_all_rollouts[0][1], images_in_all_rollouts[1][1])
+
+
+
+def test_random_static_cameras_one_shot_at_2s():
+    '''
+    Identical to above, but take only one pictures at t=2s
+    '''
+
+    ground_plane = GroundPlaneHook()
+
+    height = 3.
+
+    duck_1 = BasicOBJHook(
+        category_name = 'rubber_duck',
+        path_to_obj = DUCK_OBJ_PATH,
+        position = np.array([0,0,height]),
+        time_to_create = 0.,
+        )
+
+    duck_2 = BasicOBJHook(
+        category_name = 'rubber_duck',
+        path_to_obj = DUCK_OBJ_PATH,
+        position = np.array([0,0,height]),
+        time_to_create = 1.,
+        )
+
+    duck_3 = BasicOBJHook(
+        category_name = 'rubber_duck',
+        path_to_obj = DUCK_OBJ_PATH,
+        position = np.array([0,0,height]),
+        time_to_create = 2.,
+        )
+
+    camera_1 = RandomStaticCameraHook(
+        K = [1075.65091572, 0.0, 210.06888344, 0.0, 1073.90347929, 174.72159802, 0.0, 0.0, 1.0],
+        img_shape = (400,400),
+        # position = np.array([10., 10., 7.]),
+        # lookat = np.array([0., 0., 0.]),
+        position = [(-10., 10.), (-10., 10.), 7],
+        lookat = [(-0.2, 0.2), (-0.2, 0.2), (0, 0.1)],
+        up = 'up',
+        start = 2.,
+        light_src = [(-1,1), (-1,1), 1],
+        )
+
+    camera_2 = RandomStaticCameraHook(
+        K = [1075.65091572, 0.0, 210.06888344, 0.0, 1073.90347929, 174.72159802, 0.0, 0.0, 1.0],
+        img_shape = (400,400),
+        position = [(-10., 10.), (-10., 10.), 6],
+        lookat = [(-0.2, 0.2), (-0.2, 0.2), (0, 0.1)],
+        up = 'up',
+        start = 2.,
+        )
+
+    sim = BulletSimulator(
+        mode=CONNECT_MODE,
+        max_time=5.,
+        hooks=[
+            ground_plane,
+            duck_1,
+            duck_2,
+            duck_3,
+            camera_1,
+            camera_2,
+            ],
+        )
+
+
+    images_in_all_rollouts = []
+    for _ in range(2):
+
+        out = sim.reset()
+
+        images = maybe_collect_images(out)
+        assert len(images) == 0
+
+        # num_images = 0
+        images_in_rollout = []
+
+        while sim.running:
+            out = sim.step()
+
+            images = maybe_collect_images(out)
+            if len(images) > 0:
+                images_in_rollout.extend(images)
+        images_in_all_rollouts.append(images_in_rollout)
+
+    sim.close()
+
+    # images across different rollout should be different.
+    assert not np.allclose(images_in_all_rollouts[0][0], images_in_all_rollouts[1][0])
+    assert not np.allclose(images_in_all_rollouts[0][1], images_in_all_rollouts[1][1])
 
