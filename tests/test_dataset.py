@@ -174,36 +174,3 @@ def test_dataset_two_cams():
             overlap = inter.sum() / union.sum()
 
             assert overlap > .9
-
-
-
-    # for ann1, ann2 in zip(anno_c1, anno_c2):
-    #     rgb1 = imread( os.path.join(cache_dir, ann1['path_to_rgb']) )
-    #     rgb2 = imread( os.path.join(cache_dir, ann2['path_to_rgb']) )
-    #     assert rgb1.shape == (400,400,4)
-    #     assert rgb2.shape == (400,400,4)
-
-    #     depth1 = imread( os.path.join(cache_dir, ann1['path_to_depth']) )
-    #     depth2 = imread( os.path.join(cache_dir, ann2['path_to_depth']) )
-    #     assert depth1.shape == (400,400)
-    #     assert depth2.shape == (400,400)
-
-    #     label1 = imread( os.path.join(cache_dir, ann1['path_to_label']) )
-    #     label2 = imread( os.path.join(cache_dir, ann2['path_to_label']) )
-    #     assert label1.shape == (400,400)
-    #     assert label2.shape == (400,400)
-
-    #     if VIS:
-    #         plt.figure(1), plt.clf(), plt.imshow(np.concatenate([rgb1, rgb2], axis=1))
-    #         plt.figure(2), plt.clf(), plt.imshow(np.concatenate([depth1, depth2], axis=1))
-    #         plt.figure(3), plt.clf(), plt.imshow(np.concatenate([label1, label2], axis=1))
-    #         plt.show(block=False)
-    #         plt.pause(.5)
-
-    # print('\ncache_dir: %s' % cache_dir)
-    # assert set( np.unique(label1) ) == set([0,1,2,3,4])
-    # assert set( np.unique(label2) ) == set([0,1,2,3,4])
-
-
-
-
