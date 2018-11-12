@@ -117,7 +117,7 @@ class DatasetWriter():
         # path_to_rgb, path_to_depth, path_to_label, 
         path_to_dataset,
         base_format,
-        path_to_yml,
+        yml_filename,
         ):
 
 
@@ -137,7 +137,7 @@ class DatasetWriter():
         self.depth_path = depth_path
         self.label_path = label_path
 
-        self.yml_file = open(path_to_yml, 'w')
+        self.yml_file = open(os.path.join(path_to_dataset, yml_filename), 'w')
         self.idx = 0
 
     def _write_rgb(self, rgb, idx):
