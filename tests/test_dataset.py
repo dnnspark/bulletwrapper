@@ -75,13 +75,13 @@ def test_dataset_two_cams():
     dataset_writer_1 = DatasetWriter(
         path_to_dataset = cache_dir,
         base_format = 'C1_%04d.png',
-        path_to_yml = os.path.join(cache_dir, 'anno_c1.yml')
+        yml_filename = 'anno_c1.yml',
         )
 
     dataset_writer_2 = DatasetWriter(
         path_to_dataset = cache_dir,
         base_format = 'C2_%04d.png',
-        path_to_yml = os.path.join(cache_dir, 'anno_c2.yml')
+        yml_filename = 'anno_c2.yml',
         )
 
     camera_1 = StaticOGLCameraHook(
