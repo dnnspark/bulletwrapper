@@ -118,6 +118,7 @@ class DatasetWriter():
         path_to_dataset,
         base_format,
         yml_filename,
+        start_idx = 0,
         ):
 
 
@@ -138,7 +139,7 @@ class DatasetWriter():
         self.label_path = label_path
 
         self.yml_file = open(os.path.join(path_to_dataset, yml_filename), 'w')
-        self.idx = 0
+        self.idx = start_idx
 
     def _write_rgb(self, rgb, idx):
         _filename = self.rgb_path % idx
