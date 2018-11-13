@@ -7,6 +7,9 @@ error:
 venv:
 	python3 -m venv ./venv
 	ln -s venv/bin/activate activate
+	. ./venv/bin/activate; \
+	pip3 install -U pip setuptools wheel
+
 
 install_package:
 	. ./venv/bin/activate; \
@@ -14,11 +17,11 @@ install_package:
 
 install_test:
 	. ./venv/bin/activate; \
-	pip3 install pytest flake8
+	pip3 install -U pytest flake8
 
 install_tools:
 	. ./venv/bin/activate; \
-	pip3 install seaborn scikit-image imageio
+	pip3 install -U seaborn scikit-image imageio
 
 install: venv install_package install_test
 
