@@ -70,9 +70,9 @@ def project_points(points_3D, R, t, K):
 
     return p
 
-def project_mesh(mesh, R, t, K, img_shape):
+def project_mesh(mesh, R, t, K, img_shape, mesh_scale=1.0):
 
-    verts_3D = np.array(mesh.vertices)
+    verts_3D = np.array(mesh.vertices) * mesh_scale
     p = project_points(verts_3D, R, t, K)
     mask = draw_mask(p, mesh.faces, img_shape)
 
