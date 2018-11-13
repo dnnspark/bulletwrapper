@@ -5,15 +5,6 @@ from .pack_box import make_packed_cuboids_scene
 from functools import partial
 from bulletwrapper.util.bullet_util import add_obj
 from bulletwrapper import ObjectInfo
-    # fallout_grid = CuboidGridHook(
-    #     path_to_obj = FALLOUT_OBJ_PATH,
-    #     box_dim = [ (.25, .35), (.35, 45) ],
-    #     inplane_rot_angles = [-5, 0, 5],
-    #     slack = (0, 0.003),
-    #     block_filter = block_filter,
-    #     )
-
-# poses = make_packed_cuboids_scene(fallout_obj, box_dim, inplane_rot_angles, max_area, slack_range)
 
 import time
 
