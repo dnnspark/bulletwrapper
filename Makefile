@@ -10,7 +10,6 @@ venv:
 	. ./venv/bin/activate; \
 	pip3 install -U pip setuptools wheel
 
-
 install_package:
 	. ./venv/bin/activate; \
 	pip3 install -e .
