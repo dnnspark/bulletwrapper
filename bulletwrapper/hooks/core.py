@@ -189,14 +189,14 @@ class RandomTexturedGroundPlaneHook(OBJCreatorHook):
         path to folder containing texture images.
     '''
 
-    def __init__(self, texture_image_dir, size=1.):
+    def __init__(self, texture_image_dir, size=1., use_random_color=True):
 
         kwargs_setters = {
             'path_to_obj': lambda: os.path.join(data_root, 'models/unit_plane.obj'),
             'scale': partial(random_size_to_scale, size=size, model_size=1.),
             'fix_base': lambda: True,
             'texture_file': partial(random_texture_file, texture_image_dir=texture_image_dir),
-            'rgb': random_color,
+            'rgb': random_color if use_random_color else lambda: None,
             }
 
         self._time_to_create = 0.

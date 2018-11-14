@@ -119,6 +119,7 @@ class DatasetWriter():
         base_format,
         yml_filename,
         start_idx = 0,
+        setup_dir = True,
         ):
 
 
@@ -128,9 +129,10 @@ class DatasetWriter():
         depth_path = os.path.join('depth/', base_format)
         label_path = os.path.join('label/', base_format)
 
-        maybe_makedirs( os.path.dirname(os.path.join(path_to_dataset, rgb_path))  )
-        maybe_makedirs( os.path.dirname(os.path.join(path_to_dataset, depth_path)) ) 
-        maybe_makedirs( os.path.dirname(os.path.join(path_to_dataset, label_path)) ) 
+        if setup_dir:
+            maybe_makedirs( os.path.dirname(os.path.join(path_to_dataset, rgb_path))  )
+            maybe_makedirs( os.path.dirname(os.path.join(path_to_dataset, depth_path)) ) 
+            maybe_makedirs( os.path.dirname(os.path.join(path_to_dataset, label_path)) ) 
 
         self.dataset_root = path_to_dataset
 
