@@ -1,4 +1,9 @@
-bulletwrapper
+## Sample a scene, wait until it's stablized, return the object poses.
+```
+$ python scripts/sample_final_bullet_scene --config-file configs/tless_scenes.yaml
+```
+
+<!-- bulletwrapper
 =============
 
 **bulletwrapper is a set of extensions to pybullet (https://pybullet.org/). It includes interface classes and utility functions.**
@@ -42,3 +47,4 @@ while True:
 
 
 
+ -->

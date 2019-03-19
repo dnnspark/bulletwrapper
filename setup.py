@@ -25,6 +25,9 @@ REQUIRED = [
     'imageio',
     'pyyaml',
     'opencv-python',
+    'yacs',
+    'tqdm',
+    'fire',
 ]
 
 # What packages are optional?
