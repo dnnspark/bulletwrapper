@@ -1,25 +1,27 @@
+SHELL := /bin/bash
+
 PACKAGE_NAME = bulletwrapper
 
 error:
-	@echo "Empty taget is not allowed. Choose one of the targets in Makefile."
+	@echo "Empty target is not allowed. Choose one of the targets in Makefile."
 	@exit 2
 
 venv:
 	python3 -m venv ./venv
 	ln -s venv/bin/activate activate
-	. ./venv/bin/activate; \
+	. ./venv/bin/activate && \
 	pip3 install -U pip setuptools wheel
 
 install_package:
-	. ./venv/bin/activate; \
-	pip3 install -e .
+	. ./venv/bin/activate && \
+	python setup.py build develop
 
 install_test:
-	. ./venv/bin/activate; \
+	. ./venv/bin/activate && \
 	pip3 install -U pytest flake8
 
 install_tools:
-	. ./venv/bin/activate; \
+	. ./venv/bin/activate && \
 	pip3 install -U seaborn scikit-image imageio
 
 install: venv install_package install_test
@@ -33,8 +35,8 @@ ci:
 	pytest tests
 
 flake8:
-	flake8 --ignore=E501,F401,E128,E402,E731,F821 bulletwrapper
-	flake8 --ignore=E501,F401,E128,E402,E731,F821 tests
+	. ./venv/bin/activate && \
+	python -m flake8 --config flake8.config
 
 clean:
 	rm -rf `find $(PACKAGE_NAME) -name '*.pyc'`
@@ -43,6 +45,7 @@ clean:
 	rm -rf `find tests -name __pycache__`
 
 clean_all: clean
+	rm -rf build/
 	rm -rf *.egg-info
 	rm -rf venv/
 	rm -rf activate
@@ -60,6 +63,6 @@ setup:
 dry_sync: clean
 	rsync -anv ${PWD} ${REMOTE_IP}:~/projects/ --exclude-from='${HOME}/projects/scripts/rsync_exclude.txt'
 
-sync: clean 
+sync: clean
 	rsync -azP ${PWD} ${REMOTE_IP}:~/projects/ --exclude-from='${HOME}/projects/scripts/rsync_exclude.txt'
 
