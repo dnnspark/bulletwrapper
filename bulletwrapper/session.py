@@ -126,18 +126,6 @@ class BulletSession():
             hook.close()
         pb.disconnect()
 
-    # def get_object_poses(self):
-
-    #     object_poses = []
-    #     for obj_info in self.objects:
-    #         path_to_obj, mesh_scale, body_id, category_name = obj_info
-    #         pos, quat =  pb.getBasePositionAndOrientation(body_id)
-    #         object_pose = ObjectPose(path_to_obj, mesh_scale, Pose(pos, quat), category_name)
-
-    #         object_poses.append(object_pose)
-
-    #     return object_poses
-
 
 class BulletHook():
     '''
@@ -171,7 +159,3 @@ class BulletHook():
 
 class StopSimulation(Exception):
     pass
-
-
-ObjectInfo = collections.namedtuple('ObjectInfo', 'path_to_obj mesh_scale body_id category_name')
-
