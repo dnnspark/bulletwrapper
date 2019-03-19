@@ -34,9 +34,11 @@ def main():
 
     with BulletSession(**kwargs) as sess:
         sess.register_hook(SimpleSceneSetup())
-        sess.reset()
-        while sess.is_running:
-            sess.step()
+
+        for _ in range(3):
+            sess.reset()
+            while sess.is_running:
+                sess.step()
     LOG.info("Session is closed.")
 
 if __name__ == '__main__':

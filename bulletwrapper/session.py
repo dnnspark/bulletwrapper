@@ -24,7 +24,7 @@ class BulletSession():
         self.num_solver_iterations = num_solver_iterations
         self.gravity = gravity
         self.hooks = hooks
-        self.buffers = {}
+        # self.buffers = {}
 
         self.terminated = None
 
@@ -55,8 +55,7 @@ class BulletSession():
 
     def init(self):
 
-        # (TODO) Are these overridden after pb.resetSimulation()?
-        # If it's one time thing, it's good idea to set it in __enter__
+        # These are overridden after pb.resetSimulation().
         pb.setGravity(0, 0, self.gravity)
         pb.setTimeStep(self.timestep)
         pb.setPhysicsEngineParameter(numSolverIterations=self.num_solver_iterations)
@@ -68,12 +67,13 @@ class BulletSession():
 
         pb.resetSimulation(self.client_id)
         self.init()
-        self.objects = []
+        self.buffers = {}
 
         reset_output = []
         for hook in self.hooks:
             output = hook.after_reset(self)
             reset_output.append(output)
+
 
         return reset_output
 
@@ -126,17 +126,17 @@ class BulletSession():
             hook.close()
         pb.disconnect()
 
-    def get_object_poses(self):
+    # def get_object_poses(self):
 
-        object_poses = []
-        for obj_info in self.objects:
-            path_to_obj, mesh_scale, body_id, category_name = obj_info
-            pos, quat =  pb.getBasePositionAndOrientation(body_id)
-            object_pose = ObjectPose(path_to_obj, mesh_scale, Pose(pos, quat), category_name)
+    #     object_poses = []
+    #     for obj_info in self.objects:
+    #         path_to_obj, mesh_scale, body_id, category_name = obj_info
+    #         pos, quat =  pb.getBasePositionAndOrientation(body_id)
+    #         object_pose = ObjectPose(path_to_obj, mesh_scale, Pose(pos, quat), category_name)
 
-            object_poses.append(object_pose)
+    #         object_poses.append(object_pose)
 
-        return object_poses
+    #     return object_poses
 
 
 class BulletHook():
