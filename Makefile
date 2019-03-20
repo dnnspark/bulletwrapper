@@ -24,9 +24,13 @@ install_tools:
 	. ./venv/bin/activate && \
 	pip3 install -U seaborn scikit-image imageio
 
-install: venv install_package install_test
+compile_proto:
+	protoc3 bulletwrapper/proto/geometric.proto --python_out=./
+	# protoc bulletwrapper/proto/geometric.proto --python_out=./
 
-dev: venv install_package install_test install_tools
+install: venv install_package install_test compile_proto
+
+dev: install install_tools
 
 test:
 	pytest tests -s
@@ -47,6 +51,7 @@ clean:
 clean_all: clean
 	rm -rf build/
 	rm -rf *.egg-info
+	rm -rf `find bulletwrapper -name '*_pb2.py'`
 	rm -rf venv/
 	rm -rf activate
 

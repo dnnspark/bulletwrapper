@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import os
+
 import fire
 
 from bulletwrapper.config import get_default_cfg
@@ -8,13 +10,14 @@ from bulletwrapper.util.logger import setup_logger
 LOG = setup_logger(__name__, None)
 
 
-def main(config_file, output_dir="./out"):
+def main(config_file, output_file="./out"):
 
     cfg = get_default_cfg()
     cfg.merge_from_file(config_file)
     cfg.merge_from_list(["OUTPUT_DIR", output_dir])
     cfg.freeze()
 
+    os.makedirs(output_dir)
     import pdb; pdb.set_trace()
 
 if __name__ == '__main__':

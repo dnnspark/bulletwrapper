@@ -28,6 +28,7 @@ REQUIRED = [
     'yacs',
     'tqdm',
     'fire',
+    'protobuf',
 ]
 
 # What packages are optional?
