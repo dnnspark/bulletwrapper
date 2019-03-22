@@ -42,18 +42,21 @@ flake8:
 	. ./venv/bin/activate && \
 	python -m flake8 --config flake8.config
 
-clean:
+clean_cache:
 	rm -rf `find $(PACKAGE_NAME) -name '*.pyc'`
 	rm -rf `find $(PACKAGE_NAME) -name __pycache__`
 	rm -rf `find tests -name '*.pyc'`
 	rm -rf `find tests -name __pycache__`
 
-clean_all: clean
+clean_proto:
+	rm -rf `find bulletwrapper -name '*_pb2.py'`
+
+clean_all: clean_cache clean_proto
 	rm -rf build/
 	rm -rf *.egg-info
-	rm -rf `find bulletwrapper -name '*_pb2.py'`
 	rm -rf venv/
 	rm -rf activate
+
 
 .PHONY: venv install_package install_test install_tools install dev test ci flake8 clean clean_all
 

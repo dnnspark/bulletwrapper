@@ -3,22 +3,38 @@
 import os
 
 import fire
+import numpy as np
 
 from bulletwrapper.config import get_default_cfg
+from bulletwrapper.initialize.hook import GridLayersInitializer
+from bulletwrapper.proto.geometric_pb2 import SceneGeometries
+from bulletwrapper.samplers import sample_final_scene
 from bulletwrapper.util.logger import setup_logger
 
 LOG = setup_logger(__name__, None)
 
 
-def main(config_file, output_file="./out"):
+def main(config_file, output_dir="./out"):
 
     cfg = get_default_cfg()
     cfg.merge_from_file(config_file)
-    cfg.merge_from_list(["OUTPUT_DIR", output_dir])
+    cfg.merge_from_list(["OUTPUT.OUTPUT_DIR", output_dir])
     cfg.freeze()
 
     os.makedirs(output_dir)
-    import pdb; pdb.set_trace()
+    np.random.seed(cfg.NUMPY_RANDOM_SEED)
 
-if __name__ == '__main__':
+    output_path = os.path.join(output_dir, cfg.OUTPUT.SCENE_GEOMETRIES_FILE)
+    sampler = sample_final_scene(cfg)
+
+    with open(output_path, "wb") as f:
+        for scene in sampler:
+            f.write(MessageToString(scene))
+
+    LOG.info("Saved to: {}".format(output_path))
+
+    initializer = GridLayersInitializer(cfg)
+
+
+if __name__ == "__main__":
     fire.Fire(main)

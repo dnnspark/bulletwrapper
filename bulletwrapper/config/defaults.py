@@ -2,6 +2,9 @@ from yacs.config import CfgNode as CN
 
 _C = CN()
 
+# numpy random seed
+_C.NUMPY_RANDOM_SEED = 1234
+
 #-----------------------------------------------------------------------------
 # Bullet configuration.
 #-----------------------------------------------------------------------------
@@ -15,14 +18,14 @@ _C.BULLET.TIMESTEP = 0.0002
 _C.BULLET.MAX_TIME = -1.
 # numSolverIteration parameter of bullet
 _C.BULLET.NUM_SOLVER_ITERATIONS = 20
+# gravity constant
+_C.BULLET.GRAVITY = -9.81
 
 #-----------------------------------------------------------------------------
 # Scene set configuration
 #-----------------------------------------------------------------------------
 # Number of scenes
 _C.NUM_SCENES = 10
-# A list of path to the mesh files; typically .obj or .ply
-_C.MESH_PATH = ()
 
 #-----------------------------------------------------------------------------
 # Object pose initialization configuration.
@@ -30,24 +33,35 @@ _C.MESH_PATH = ()
 _C.INIT = CN()
 # For now, "grid" initialzation is the only option.
 _C.INIT.USE_GRID = True
+# Use inifinite groundplane on z=0.
+_C.INIT.USE_GROUNDPLANE = True
 
 #-----------------------------------------------------------------------------
 # Grid initialization configuration.
 #-----------------------------------------------------------------------------
 _C.INIT.GRID = CN()
+# A list of path to the mesh files; typically .obj or .ply
+_C.INIT.GRID.MESH_PATHS = ()
+# Length unit of mesh:
+_C.INIT.GRID.MESH_UNIT = "m"
+# Frequency weight on each model.
+# By default, it uses uniform distribution over the models.
+_C.INIT.GRID.WEIGHTS_ON_MODEL = (1,) # uniform
 # Number of layers.
 _C.INIT.GRID.NUM_LAYERS = 3
-# If True, use LAYER_SIZE; if Flase use NUM_OBJECTS_PER_LAYER
-_C.INIT.GRID.USE_LAYER_SIZE = True
-_C.INIT.GRID.NUM_OBJECTS_PER_LAYER = (4, 4)
-_C.INIT.GRID.LAYER_SIZE = (1., 1.)
+# Range of xy-dimension of layers.
+# ((x_min, y_min), (x_max, y_max))
+_C.INIT.GRID.LAYER_SIZE = ((1., 1.), (1., 1.))
+# Range of center of layers.
+# ((x_min, y_min), (x_max, y_max))
+_C.INIT.GRID.LAYER_CENTER = ((0., 0), (0., 0.))
 # Extra-padding between layers.
 # The height of each layer is computed as following:
 # if ONLY_INPLANE_ROATION is True:
 #   max(width, height, depth) + GAP_BETWEEN_LAYERS
 # else:
 #   diagonal_of_bounding_cube + GAP_BETWEEN_LAYERS
-_C.INIT.GRID.GAP_BETWEEN_LAYERS = 0.01
+_C.INIT.GRID.GAP_BETWEEN_LAYERS = 0.
 # If True, use only inplane rotation for model poses;
 # If False, allow arbitrary 3D rotation.
 _C.INIT.GRID.ONLY_INPLANE_ROTATION = True
@@ -57,16 +71,21 @@ _C.INIT.GRID.ONLY_INPLANE_ROTATION = True
 #   ((x_min, y_min, z_min), (x_max, y_max, z_max))
 # , and then normalized to unit-norm.
 _C.INIT.GRID.ROTATION_AXIS_RANGE = ((-1., -1., -1.), (1., 1., 1.))
-# The rotation angle is uniformly sampled.
-_C.INIT.GRID.ROTATION_RANGE = (-30., 30.)
+# Range of rotation angle in degree.
+_C.INIT.GRID.ROTATION_ANGLE_RANGE = (-30., 30.)
 
 
 
 
 #-----------------------------------------------------------------------------
-# Misc. options
+# Output options
 #-----------------------------------------------------------------------------
-_C.OUTPUT_DIR = "."
+_C.OUTPUT = CN()
+
+# root of output directory
+_C.OUTPUT.OUTPUT_DIR = "."
+# protobuf files writing
+_C.OUTPUT.SCENE_GEOMETRIES_FILE = "scene_geometries.pb"
 
 def get_default_cfg():
   """

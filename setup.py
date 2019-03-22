@@ -7,28 +7,30 @@ from shutil import rmtree
 
 import setuptools as sutools
 
-VERSION = '0.0.1'
+VERSION = "0.0.1"
 
 # Package meta-data.
-NAME = 'bulletwrapper'
-DESCRIPTION = 'bulletwrapper is a set of extensions of pybullet. It interface classes and utility functions.'
-URL = 'https://github.com/dnnspark/bulletwrapper'
-EMAIL = 'dnnsipark@gmail.com'
-AUTHOR = 'Dennis Park'
+NAME = "bulletwrapper"
+DESCRIPTION = "bulletwrapper is a set of extensions of pybullet. It interface classes and utility functions."
+URL = "https://github.com/dnnspark/bulletwrapper"
+EMAIL = "dnnsipark@gmail.com"
+AUTHOR = "Dennis Park"
 # REQUIRES_PYTHON = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"  # 2.7 or >=3.4
 REQUIRES_PYTHON = ">=3.4"
 
 # What packages are required for this module to be executed?
 REQUIRED = [
-    'pybullet',
-    'numpy>=1.13.0',
-    'imageio',
-    'pyyaml',
-    'opencv-python',
-    'yacs',
-    'tqdm',
-    'fire',
-    'protobuf',
+    "pybullet",
+    "numpy>=1.13.0",
+    "imageio",
+    "pyyaml",
+    "opencv-python",
+    "yacs",
+    "tqdm",
+    "fire",
+    "protobuf",
+    "trimesh",
+    "lxml",
 ]
 
 # What packages are optional?
@@ -42,8 +44,8 @@ EXTRAS = {}
 here = os.path.abspath(os.path.dirname(__file__))
 
 # Import the README and use it as the long-description.
-with io.open(os.path.join(here, 'README.md'), encoding='utf-8') as f:
-    long_description = '\n' + f.read()
+with io.open(os.path.join(here, "README.md"), encoding="utf-8") as f:
+    long_description = "\n" + f.read()
 
 # # Load the package's __version__.py module as a dictionary.
 
@@ -53,28 +55,27 @@ sutools.setup(
     version=VERSION,
     description=DESCRIPTION,
     long_description=long_description,
-    long_description_content_type='text/markdown',
+    long_description_content_type="text/markdown",
     author=AUTHOR,
     author_email=EMAIL,
     python_requires=REQUIRES_PYTHON,
     url=URL,
     # packages=sutools.find_packages(exclude=('tests',)),
     packages=sutools.find_packages(),
-        # sutools.find_packages(exclude=('test',)),
+    # sutools.find_packages(exclude=('test',)),
     # If your package is a single module, use this instead of 'packages':
     # py_modules=['mypackage'],
-
     # entry_points={
     #     'console_scripts': ['mycli=mymodule:cli'],
     # },
     install_requires=REQUIRED,
     extras_require=EXTRAS,
     include_package_data=True,
-    license='MIT',
+    license="MIT",
     classifiers=[
         # Trove classifiers
         # Full list: https://pypi.python.org/pypi?%3Aaction=list_classifiers
-        'License :: OSI Approved :: MIT License',
+        "License :: OSI Approved :: MIT License",
         # 'Programming Language :: Python',
         # 'Programming Language :: Python :: 3',
         # 'Programming Language :: Python :: 3.6',
@@ -82,21 +83,20 @@ sutools.setup(
         # 'Programming Language :: Python :: Implementation :: PyPy'
         # 'Development Status :: 2 - Pre-Alpha',
         # 'Intended Audience :: Developers',
-        'Natural Language :: English',
+        "Natural Language :: English",
         # 'License :: OSI Approved :: Apache Software License',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: Implementation :: CPython',
-        'Programming Language :: Python :: Implementation :: PyPy'
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.4",
+        "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: Implementation :: CPython",
+        "Programming Language :: Python :: Implementation :: PyPy",
     ],
     # $ setup.py publish support.
     cmdclass={
         # 'upload': UploadCommand,
     },
-
     # zip_safe=False,
 )

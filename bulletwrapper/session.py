@@ -1,22 +1,28 @@
-import pybullet as pb
 import collections
 import itertools
 import re
-from bulletwrapper.dataset import Pose, ObjectPose
 
-class BulletSession():
+import numpy as np
+import pybullet as pb
+
+from bulletwrapper.dataset import ObjectPose, Pose
+
+
+class BulletSession:
     """
     openai-gym style interface of pybullet.
     """
 
-    def __init__(self,
-        mode = pb.GUI,
-        timestep = 0.0002,
-        max_time = None, # indefinite
-        num_solver_iterations = 20,
+    def __init__(
+        self,
+        mode=pb.GUI,
+        timestep=0.0002,
+        max_time=None,  # indefinite
+        num_solver_iterations=20,
         gravity=-9.81,
         hooks=[],
-        ):
+        seed=None,
+    ):
 
         self.client_id = pb.connect(mode)
         self.timestep = timestep
@@ -27,6 +33,9 @@ class BulletSession():
         # self.buffers = {}
 
         self.terminated = None
+
+        if seed:
+            np.random.seed(seed)
 
     def __enter__(self):
         return self
@@ -74,11 +83,10 @@ class BulletSession():
             output = hook.after_reset(self)
             reset_output.append(output)
 
-
         return reset_output
 
     def step(self):
-        '''
+        """
         Proceed one step in simulation.
         1. pb.stepSimulation()
         2. Call .after_step() methods of all hooks.
@@ -86,7 +94,7 @@ class BulletSession():
             - if any of the hook raise StopSimulation,
                 all outputs of the current step are ignored,
                 and the before_end() methods are called (see .terminate()).
-        '''
+        """
 
         try:
             step_output = self._step()
@@ -127,8 +135,8 @@ class BulletSession():
         pb.disconnect()
 
 
-class BulletHook():
-    '''
+class BulletHook:
+    """
     This hook is a template interface for adding modular components to BulletSimulation.
     It tells what to do at each stage in simulation.
     1. after_reset()
@@ -143,7 +151,7 @@ class BulletHook():
         See BulletSimulation._terminate().
     4. close()
         This tells what to do before closing the simulator.
-    '''
+    """
 
     def after_reset(self, sess):
         pass
@@ -156,6 +164,7 @@ class BulletHook():
 
     def close(self):
         pass
+
 
 class StopSimulation(Exception):
     pass

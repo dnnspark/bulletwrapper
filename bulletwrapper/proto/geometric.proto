@@ -23,3 +23,7 @@ message SceneGeometry {
     Pose groundplane = 1;
     repeated Pose objects = 2;
 }
+
+message SceneGeometries {
+    repeated SceneGeometry data = 1;
+}

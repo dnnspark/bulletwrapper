@@ -1,2 +1,16 @@
 BULLET:
   MAX_TIME: 3.
+INIT:
+  GRID:
+    MESH_PATHS: (
+      "/storage/datasets/t-less/t-less_v2/models_cad/obj_01.ply",
+      "/storage/datasets/t-less/t-less_v2/models_cad/obj_02.ply",
+      "/storage/datasets/t-less/t-less_v2/models_cad/obj_03.ply",
+      "/storage/datasets/t-less/t-less_v2/models_cad/obj_04.ply",
+      "/storage/datasets/t-less/t-less_v2/models_cad/obj_05.ply",
+      )
+    MESH_UNIT: "mm"
+    LAYER_SIZE: ((1., 1.), (1., 1.))
+    WEIGHTS_ON_MODEL: (1.,)
+    NUM_LAYERS: 5
+    GAP_BETWEEN_LAYERS: 0.01
